@@ -167,4 +167,4 @@ export PROTO_FILES_DIR="/home/irakli/work/math/"
 fd() { cd $(find * -type d | fzf) }
 # fkill() { ps aux | fxf | awk '{ print $2 }' | xargs kill }
 
-source /home/irakli/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
