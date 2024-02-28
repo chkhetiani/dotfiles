@@ -1,0 +1,48 @@
+
+general {
+    colors = true
+    color_good = "#a3be8c"
+    color_degraded = "#ebcb8b"
+    color_bad = "#bf616a"
+    interval = 1
+    separator = "|"
+}
+
+order += "tztime local"
+order += "tztime berlin"
+order += "cpu_usage"
+order += "cpu_temperature 0"
+order += "ethernet enp2s0"
+order += "volume master"
+
+cpu_usage {
+    format = "%usage"
+    max_threshold  = "30"
+    degraded_threshold = "5"
+}
+
+ethernet  enp2s0 {
+  format_up = "ETH: %ip (%speed)"
+  format_down = "ETH: down"
+}
+
+cpu_temperature 0 {
+    format = "T: %degrees °C"
+}
+
+tztime local {
+    format = "%Y-%m-%d %H:%M:%S"
+}
+
+tztime berlin {
+    format = "%Y-%m-%d %H:%M:%S %Z"
+    timezone = "Europe/Berlin"
+}
+
+volume master {
+        format = "♪: %volume"
+        format_muted = "♪: muted (%volume)"
+        device = "default"
+        mixer = "Master"
+        mixer_idx = 0
+}

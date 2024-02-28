@@ -1,0 +1,20 @@
+// vim:ts=4:sw=4:et
+{
+    "border": "none",
+    "current_border_width": 0,
+    "floating": "auto_off",
+    "geometry": {
+        "height": 1058,
+        "width": 960,
+        "x": 960,
+        "y": 0
+    },
+    "marks": [],
+    "name": "Slack",
+    "percent": 1,
+    "swallows": [{
+        "class": "^Slack$",
+        "instance": "^slack$"
+    }],
+    "type": "con"
+}
