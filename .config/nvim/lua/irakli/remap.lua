@@ -22,7 +22,6 @@ vim.keymap.set("i", "jj", "<Esc>")
 vim.keymap.set("n", "<leader>q", ":set hlsearch!<CR>")
 
 vim.keymap.set("n", "Q", "<nop>")
-vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww sessionizer.sh<CR>")
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
 vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz")
