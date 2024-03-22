@@ -23,5 +23,8 @@ return {
                 font = "14", -- font size
             },
         },
-    }
+    },
+    config = function ()
+        vim.keymap.set("n", "<leader>z", ":ZenMode<CR>")
+    end
 }
