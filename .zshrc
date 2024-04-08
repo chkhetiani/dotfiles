@@ -2,7 +2,6 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -74,8 +73,8 @@ plugins=(git
 	sudo
 	zsh-autosuggestions)
 
+export ZSH="$HOME/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -116,8 +115,6 @@ export PATH
 prompt pure
 prompt_newline='%666v'
 PROMPT=" $PROMPT"
-
-source /home/irakli/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 
 bindkey '^y' autosuggest-accept
