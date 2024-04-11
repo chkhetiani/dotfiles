@@ -23,6 +23,12 @@ return {
             end
         end, { silent = true })
 
+        luasnip.add_snippets("markdown", {
+            luasnip.snippet("do", {
+                luasnip.text_node('[ ] - ')
+            })
+        });
+
         require("luasnip.loaders.from_vscode").lazy_load()
 
         cmp.setup {
