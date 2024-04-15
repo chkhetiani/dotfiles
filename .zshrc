@@ -139,7 +139,12 @@ alias gpu="git pull"
 alias grs="git checkout -- stats/"
 
 
-
+function limit {
+    readonly proc=${1:?"process name must be specified."}
+    perc=${2:?"percentage must be specified."}
+    perc=$((perc * 24))
+    cpulimit --limit $perc --pid $(pidof $proc)
+}
 
 # functions
 function mrun() {

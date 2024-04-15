@@ -234,7 +234,7 @@ bindsym Shift+Print exec --no-startup-id pp="/home/$USER/Pictures/Screenshots/$(
 
 bindsym Control+Shift+s exec "thunar /home/irakli/work/prototypes/stats/"
 bindsym Control+Shift+d exec "thunar /home/irakli/personal/"
-bindsym Control+Shift+e exec "thunar /home/irakli/"
+# bindsym Control+Shift+e exec "thunar /home/irakli/"
 
 exec_always --no-startup-id picom &
 exec_always --no-startup-id ~/.config/i3/polybar.sh
