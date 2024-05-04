@@ -246,7 +246,7 @@ bindsym $mod+a exec /home/irakli/bin/dir.sh
 
 
 # for_window [class="^.*"] border pixel 1 
-hide_edge_borders smart
+# hide_edge_borders none
 # default_border none
 
 for_window [class="Blueman-manager" instance="blueman-manager"] floating enable
@@ -257,4 +257,4 @@ client.focused #7AA2F7 #7AA2F7 #292F34
 gaps inner 10
 gaps outer 0
 # smart_gaps on
-smart_borders on
+# smart_borders on
