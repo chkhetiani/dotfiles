@@ -18,6 +18,7 @@ vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
 vim.keymap.set("i", "jj", "<Esc>")
 
+vim.keymap.set("n", "<leader>;", "$a;<Esc>")
 
 vim.keymap.set("n", "<leader>q", ":set hlsearch!<CR>")
 
