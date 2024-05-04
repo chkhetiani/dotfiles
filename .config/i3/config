@@ -250,6 +250,7 @@ hide_edge_borders smart
 # default_border none
 
 for_window [class="Blueman-manager" instance="blueman-manager"] floating enable
+for_window [class="Nitrogen" instance="nitrogen"] floating enable
 
 client.focused #7AA2F7 #7AA2F7 #292F34
 
