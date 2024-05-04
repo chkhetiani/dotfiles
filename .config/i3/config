@@ -111,7 +111,7 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 # focus the parent container
-bindsym $mod+a focus parent
+bindsym $mod+p focus parent
 
 # focus the child container
 #bindsym $mod+d focus child
@@ -233,7 +233,6 @@ bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow)
 bindsym Shift+Print exec --no-startup-id pp="/home/$USER/Pictures/Screenshots/$(date).png" && maim -s -o --select --format png "$pp" && xclip -selection clipboard -t image/png "$pp"
 
 bindsym Control+Shift+s exec "thunar /home/irakli/work/prototypes/stats/"
-bindsym Control+Shift+d exec "thunar /home/irakli/personal/"
 # bindsym Control+Shift+e exec "thunar /home/irakli/"
 
 exec_always --no-startup-id picom &
@@ -243,6 +242,7 @@ exec_always --no-startup-id ~/.config/i3/polybar.sh
 bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+g exec --no-startup-id rofi -show filebrowser
 bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
+bindsym $mod+a exec /home/irakli/bin/dir.sh
 
 
 # for_window [class="^.*"] border pixel 1 
