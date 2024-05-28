@@ -235,7 +235,7 @@ bindsym Shift+Print exec --no-startup-id pp="/home/$USER/Pictures/Screenshots/$(
 bindsym Control+Shift+s exec "thunar /home/irakli/work/prototypes/stats/"
 # bindsym Control+Shift+e exec "thunar /home/irakli/"
 
-exec_always --no-startup-id picom &
+# exec_always --no-startup-id picom &
 exec_always --no-startup-id ~/.config/i3/polybar.sh
 
 #bindsym $mod+d exec --no-startup-id j4-dmenu-desktop --dmenu="dmenu -i -fn 'DejaVu Sans-10' -l 20"
@@ -251,6 +251,7 @@ bindsym $mod+a exec /home/irakli/bin/dir.sh
 
 for_window [class="Blueman-manager" instance="blueman-manager"] floating enable
 for_window [class="Nitrogen" instance="nitrogen"] floating enable
+for_window [class="Protonvpn-app" instance="protonvpn-app"] floating enable
 
 client.focused #7AA2F7 #7AA2F7 #292F34
 
