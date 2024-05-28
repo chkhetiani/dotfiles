@@ -24,7 +24,7 @@ return {
 
                 map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
                 map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-                map('K', vim.lsp.buf.hover, 'Hover Documentation')
+                map('K', vim.lsp.buf.hover, 'Hover Do[k]umentation')
                 map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
                 -- The following two autocommands are used to highlight references of the
