@@ -29,6 +29,10 @@ return {
             })
         });
 
+        luasnip.add_snippets("java", {
+            luasnip.parser.parse_snippet("fors", "for(int x = 0; x < settings.width; x++) {\n\tfor(int y = 0; y < settings.height; y++) {\n\t\t$0\n\t}\n}")
+        });
+
         require("luasnip.loaders.from_vscode").lazy_load()
 
         cmp.setup {
