@@ -252,6 +252,7 @@ bindsym $mod+a exec /home/irakli/bin/dir.sh
 for_window [class="Blueman-manager" instance="blueman-manager"] floating enable
 for_window [class="Nitrogen" instance="nitrogen"] floating enable
 for_window [class="Protonvpn-app" instance="protonvpn-app"] floating enable
+for_window [class="SimpleScreenRecorder" instance="simplescreenrecorder"] floating enable
 
 client.focused #7AA2F7 #7AA2F7 #292F34
 
