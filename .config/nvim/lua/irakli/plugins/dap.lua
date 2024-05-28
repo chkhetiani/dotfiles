@@ -15,7 +15,16 @@ return {
         vim.keymap.set("n", "<leader>b", ":lua require'dap'.toggle_breakpoint()<CR>");
         vim.keymap.set("n", "<leader>B", ":lua require'dap'.set_breakpoint(vim.fn.input('Condition: '))<CR>");
 
+
         local dap = require('dap')
+
+        vim.keymap.set("n", "<space>gb", dap.run_to_cursor)
+
+        -- Eval var under cursor
+        vim.keymap.set("n", "<space>?", function()
+            require("dapui").eval(nil, { enter = true })
+        end)
+
 
         -- require('dap-go').setup()
 
@@ -107,6 +116,24 @@ return {
                 program = "./${relativeFileDirname}"
             }
         }
+
+        require("nvim-dap-virtual-text").setup {
+            -- This just tries to mitigate the chance that I leak tokens here. Probably won't stop it from happening...
+            display_callback = function(variable)
+                local name = string.lower(variable.name)
+                local value = string.lower(variable.value)
+                if name:match "secret" or name:match "api" or value:match "secret" or value:match "api" then
+                    return "*****"
+                end
+
+                if #variable.value > 15 then
+                    return " " .. string.sub(variable.value, 1, 15) .. "... "
+                end
+
+                return " " .. variable.value
+            end,
+        }
+
 
         require('dapui').setup()
 
