@@ -106,7 +106,7 @@ autoload -U promptinit; promptinit
 prompt pure
 
 
-JAVA_HOME='/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64'
+JAVA_HOME=$(readlink -f /user/bin/javac | sed "s:/bin/javac::")
 export JAVA_HOME
 PATH="$JAVA_HOME/bin:$PATH"
 PATH="/home/irakli/.local/bin:$PATH"
