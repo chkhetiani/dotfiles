@@ -4,8 +4,9 @@ import = ["/home/irakli/.config/alacritty/tokyo/tokyo.toml"]
 size = 10
 
 [font.normal]
-# family = "FiraCode Nerd Font"
+# family = "Fira Code"
 # family = "Liga SFMono Nerd Font"
+# family = "MapleMono"
 family = "Source Code Pro"
 
 [window]
