@@ -122,8 +122,8 @@ bindsym XF86AudioPlay exec --no-startup-id  playerctl play-pause && $refresh_i3s
 bindsym XF86AudioNext exec --no-startup-id  playerctl next && $refresh_i3status
 bindsym XF86AudioPrev exec --no-startup-id  playerctl previous && $refresh_i3status
 
-default_border none
-new_window pixel 2
+# default_border none
+# new_window pixel 2
 
 for_window [class="Blueman-manager" instance="blueman-manager"] floating enable
 for_window [class="Nitrogen" instance="nitrogen"] floating enable
