@@ -166,6 +166,8 @@ alias tmux="TERM=xterm-256color tmux"
 
 export PROTO_FILES_DIR="/home/irakli/work/math/"
 
+export EDITOR="nvim"
+
 fd() { cd $(find * -type d | fzf) }
 # fkill() { ps aux | fxf | awk '{ print $2 }' | xargs kill }
 
