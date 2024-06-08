@@ -96,6 +96,7 @@ exec --no-startup-id ~/bin/mountgDrive.sh
 exec --no-startup-id /usr/libexec/gsd-xsettings
 exec --no-startup-id "setxkbmap -model pc104 -layout us,ge -option grp:alt_shift_toggle"
 exec --no-startup-id "nitrogen --restore"
+exec --no-startup-id conky
 
 exec_always --no-startup-id ~/.config/i3/polybar.sh
 # exec_always --no-startup-id picom &
