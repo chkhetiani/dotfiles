@@ -172,3 +172,11 @@ fd() { cd $(find * -type d | fzf) }
 # fkill() { ps aux | fxf | awk '{ print $2 }' | xargs kill }
 
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
+
+
+source ~/.fzf.zsh
+# fzf history
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory
