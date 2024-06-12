@@ -1,6 +1,7 @@
 return {
     "nvim-telescope/telescope.nvim",
     config = function()
+        local telescope = require("telescope");
         local builtin = require('telescope.builtin')
         vim.keymap.set('n', '<leader>S', builtin.find_files, {})
         vim.keymap.set('n', '<leader>s', builtin.git_files, {})
@@ -15,6 +16,16 @@ return {
         vim.keymap.set('n', '<leader>tr', builtin.lsp_references, {})
 
         require("telescope").load_extension("ui-select")
+
+        telescope.setup({
+            pickers = {
+                git_branches = {
+                    mappings = {
+                        i = { ["<cr>"] = require("telescope.actions").git_switch_branch },
+                    },
+                },
+            },
+        })
     end,
     dependencies = {
         "nvim-lua/plenary.nvim",
