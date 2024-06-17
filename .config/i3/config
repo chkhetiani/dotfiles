@@ -111,7 +111,8 @@ bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+g exec --no-startup-id rofi -show filebrowser
 bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
 bindsym $mod+a exec --no-startup-id /home/irakli/bin/dir.sh
-bindsym $mod+x exec --no-startup-id "rofi -show p -modi p:'/home/irakli/bin/rofi-power-menu.sh'
+bindsym $mod+x exec --no-startup-id "rofi -show p -modi p:'/home/irakli/bin/rofi-power-menu.sh'"
+bindsym $mod+t exec --no-startup-id "xfce4-terminal -x ~/bin/tasks"
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -130,6 +131,7 @@ for_window [class="Blueman-manager" instance="blueman-manager"] floating enable
 for_window [class="Nitrogen" instance="nitrogen"] floating enable
 for_window [class="Protonvpn-app" instance="protonvpn-app"] floating enable
 for_window [class="SimpleScreenRecorder" instance="simplescreenrecorder"] floating enable
+for_window [class="Xfce4-terminal" instance="xfce4-terminal"] floating enable
 
 client.focused #7AA2F7 #7AA2F7 #292F34
 
