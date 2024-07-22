@@ -20,7 +20,37 @@ return {
         columns = {}
     },
     config = function()
-        require('oil').setup()
+        require("oil").setup({
+            keymaps = {
+                ["oo"] = {
+                    desc = "Recursively Open directores",
+                    callback = function()
+
+                        local oil = require("oil")
+                        local dir = oil.get_current_dir()
+                        local cursor = oil.get_cursor_entry()
+
+                        local function o()
+                            oil.open(dir .. cursor.name)
+                            vim.wait(50)
+
+                            dir = oil.get_current_dir()
+                            cursor = oil.get_cursor_entry()
+
+                            local bn = vim.fn.bufnr()
+                            local lines = vim.api.nvim_buf_line_count(bn)
+
+                            if lines == 1 and cursor ~= nil and cursor.type == "directory" then
+                                o()
+                            end
+                        end
+
+                        o()
+                    end,
+                },
+            },
+        })
+
         vim.keymap.set("n", "<leader>e", require('oil').open, { desc = "Open parent directory" })
     end
 }
