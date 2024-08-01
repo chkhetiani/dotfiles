@@ -5,6 +5,7 @@ return {
         'williamboman/mason-lspconfig.nvim',
         'WhoIsSethDaniel/mason-tool-installer.nvim',
         'neovim/nvim-lspconfig',
+        -- 'nvim-java/nvim-java',
         { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
@@ -93,6 +94,63 @@ return {
                     server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
                     require('lspconfig')[server_name].setup(server)
                 end,
+                -- jdtls = function()
+                --     require('java').setup {}
+                --     require('lspconfig').jdtls.setup {
+                --         {
+                --             root_markers = {
+                --                 'mvnw',
+                --                 '.git',
+                --             },
+                --
+                --             java_test = {
+                --                 enable = false,
+                --             },
+                --
+                --             -- load java debugger plugins
+                --             java_debug_adapter = {
+                --                 enable = false,
+                --             },
+                --
+                --             spring_boot_tools = {
+                --                 enable = false,
+                --             },
+                --
+                --             jdk = {
+                --                 auto_install = true,
+                --             },
+                --
+                --             notifications = {
+                --                 -- enable 'Configuring DAP' & 'DAP configured' messages on start up
+                --                 dap = false,
+                --             },
+                --
+                --             verification = {
+                --                 -- nvim-java checks for the order of execution of following
+                --                 -- * require('java').setup()
+                --                 -- * require('lspconfig').jdtls.setup()
+                --                 -- IF they are not executed in the correct order, you will see a error
+                --                 -- notification.
+                --                 -- Set following to false to disable the notification if you know what you
+                --                 -- are doing
+                --                 invalid_order = true,
+                --
+                --                 -- nvim-java checks if the require('java').setup() is called multiple
+                --                 -- times.
+                --                 -- IF there are multiple setup calls are executed, an error will be shown
+                --                 -- Set following property value to false to disable the notification if
+                --                 -- you know what you are doing
+                --                 duplicate_setup_calls = true,
+                --
+                --                 -- nvim-java checks if nvim-java/mason-registry is added correctly to
+                --                 -- mason.nvim plugin.
+                --                 -- IF it's not registered correctly, an error will be thrown and nvim-java
+                --                 -- will stop setup
+                --                 invalid_mason_registry = true,
+                --             },
+                --         }
+                --     }
+                -- end
             },
         }
     end,
