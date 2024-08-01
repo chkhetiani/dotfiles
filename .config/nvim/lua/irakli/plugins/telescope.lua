@@ -3,8 +3,27 @@ return {
     config = function()
         local telescope = require("telescope");
         local builtin = require('telescope.builtin')
+
+        local function is_git_repo()
+            local handle = io.popen('git rev-parse --is-inside-work-tree 2>/dev/null')
+            if handle == nil then
+                return false
+            end
+            local result = handle:read('*a')
+            handle:close()
+            return result:match('true') ~= nil
+        end
+
+        local function find_files_or_git_files()
+            if is_git_repo() then
+                builtin.git_files()
+            else
+                builtin.find_files()
+            end
+        end
+
         vim.keymap.set('n', '<leader>S', builtin.find_files, {})
-        vim.keymap.set('n', '<leader>s', builtin.git_files, {})
+        vim.keymap.set('n', '<leader>s', find_files_or_git_files, {})
         vim.keymap.set('n', '<leader>r', function()
             builtin.grep_string({ search = vim.fn.input("Grep > ") });
         end)
