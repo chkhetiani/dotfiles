@@ -111,6 +111,7 @@ bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+g exec --no-startup-id rofi -show filebrowser
 bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
 bindsym $mod+a exec --no-startup-id /home/irakli/bin/dir.sh
+bindsym $mod+z exec --no-startup-id /home/irakli/bin/terminal.sh
 bindsym $mod+x exec --no-startup-id "rofi -show p -modi p:'/home/irakli/bin/rofi-power-menu.sh'"
 bindsym $mod+t exec --no-startup-id "xfce4-terminal -x ~/bin/tasks"
 
