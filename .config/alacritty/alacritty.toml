@@ -1,7 +1,7 @@
 import = ["/home/irakli/.config/alacritty/tokyo/tokyo.toml"]
 
 [font]
-size = 10
+size = 9
 
 [font.normal]
 # family = "Fira Code"

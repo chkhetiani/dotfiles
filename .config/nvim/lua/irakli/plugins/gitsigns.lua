@@ -37,10 +37,7 @@ return {
             relative = 'cursor',
             row = 0,
             col = 1
-        },
-        yadm                         = {
-            enable = false
-        },
+        }
     },
     setup = function()
         vim.keymap.set('n', '<leader>gd', '<cmd>Gitsigns preview_hunk_inline<cr>', { desc= "Show git diff inline", noremap = true, silent = true })
