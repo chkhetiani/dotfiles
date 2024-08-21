@@ -3,7 +3,7 @@ return {
     opts = {
         window = {
             backdrop = 0.95,
-            width = 120,
+            width = 150,
             height = 1,
             options = {
                 -- signcolumn = "no", -- disable signcolumn
