@@ -5,9 +5,12 @@ return {
         'williamboman/mason-lspconfig.nvim',
         'WhoIsSethDaniel/mason-tool-installer.nvim',
         'neovim/nvim-lspconfig',
+        'mfussenegger/nvim-jdtls',
         -- { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
+        vim.lsp.set_log_level("debug")
+
         vim.api.nvim_create_autocmd('LspAttach', {
             group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
             callback = function(event)
@@ -56,7 +59,7 @@ return {
             tsserver = {},
             omnisharp = {},
             jdtls = {
-                cmd = { 'jdtls' },
+                cmd = { '/home/irakli/.local/share/nvim/mason/bin/jdtls' },
                 root_dir = require('lspconfig').util.root_pattern({ 'gradlew', 'mvnw', '.git' }),
             },
             lua_ls = {
@@ -93,63 +96,95 @@ return {
                     server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
                     require('lspconfig')[server_name].setup(server)
                 end,
-                -- jdtls = function()
-                --     require('java').setup {}
-                --     require('lspconfig').jdtls.setup {
-                --         {
-                --             root_markers = {
-                --                 'mvnw',
-                --                 '.git',
-                --             },
-                --
-                --             java_test = {
-                --                 enable = false,
-                --             },
-                --
-                --             -- load java debugger plugins
-                --             java_debug_adapter = {
-                --                 enable = false,
-                --             },
-                --
-                --             spring_boot_tools = {
-                --                 enable = false,
-                --             },
-                --
-                --             jdk = {
-                --                 auto_install = true,
-                --             },
-                --
-                --             notifications = {
-                --                 -- enable 'Configuring DAP' & 'DAP configured' messages on start up
-                --                 dap = false,
-                --             },
-                --
-                --             verification = {
-                --                 -- nvim-java checks for the order of execution of following
-                --                 -- * require('java').setup()
-                --                 -- * require('lspconfig').jdtls.setup()
-                --                 -- IF they are not executed in the correct order, you will see a error
-                --                 -- notification.
-                --                 -- Set following to false to disable the notification if you know what you
-                --                 -- are doing
-                --                 invalid_order = true,
-                --
-                --                 -- nvim-java checks if the require('java').setup() is called multiple
-                --                 -- times.
-                --                 -- IF there are multiple setup calls are executed, an error will be shown
-                --                 -- Set following property value to false to disable the notification if
-                --                 -- you know what you are doing
-                --                 duplicate_setup_calls = true,
-                --
-                --                 -- nvim-java checks if nvim-java/mason-registry is added correctly to
-                --                 -- mason.nvim plugin.
-                --                 -- IF it's not registered correctly, an error will be thrown and nvim-java
-                --                 -- will stop setup
-                --                 invalid_mason_registry = true,
-                --             },
-                --         }
-                --     }
-                -- end
+                jdtls = function()
+                    vim.api.nvim_create_autocmd("FileType", {
+                        pattern = "java",
+                        callback = function(event)
+                            local map = function(mode, keys, func, desc)
+                                vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+                            end
+
+                            map('n', '<leader>gi', require('jdtls').organize_imports, '[O]rganize [I]mports')
+                            map('v', '<leader>de', '<Esc><Cmd>lua require("jdtls").extract_variable(true)<CR>',
+                                'Extract Variable')
+                            map('n', '<leader>de', require('jdtls').extract_variable, 'Extract Variable')
+                            map('v', '<leader>dm', '<Esc><Cmd>lua require("jdtls").extract_method(true)<CR>',
+                                'Extract Method')
+
+                            local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+                            local workspace_dir = '/home/irakli/.local/share/java_workspaces/' .. project_name
+                            local config = {
+                                cmd = {
+                                    'java',
+                                    '-Declipse.application=org.eclipse.jdt.ls.core.id1',
+                                    '-Dosgi.bundles.defaultStartLevel=4',
+                                    '-Declipse.product=org.eclipse.jdt.ls.core.product',
+                                    '-Dlog.protocol=true',
+                                    '-Dlog.level=ALL',
+                                    '-Xmx1g',
+                                    '--add-modules=ALL-SYSTEM',
+                                    '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+                                    '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+
+                                    '-jar',
+                                    '/home/irakli/.local/share/nvim/mason/share/jdtls/plugins/org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar',
+                                    '-configuration', '/home/irakli/.local/share/nvim/mason/share/jdtls/config',
+
+                                    '-data', workspace_dir
+                                },
+
+                                root_dir = vim.fs.root(0, { ".git", "mvnw", "gradlew" }),
+
+                                -- Here you can configure eclipse.jdt.ls specific settings
+                                -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
+                                -- for a list of options
+                                settings = {
+                                    java = {
+                                        -- This doesn't work but let's keep it. 
+                                        -- Might start working
+                                        -- Never Know
+                                        signatureHelp = { enabled = true },
+                                        contentProvider = { preferred = 'fernflower' },
+                                        completion = {
+                                            favoriteStaticMembers = {
+                                                "java.util.*"
+                                            },
+                                            filteredTypes = {
+                                                "com.sun.*",
+                                                -- "java.awt.*",
+                                                -- "jdk.*", "sun.*",
+                                            },
+                                        },
+                                    }
+                                },
+
+                                -- Language server `initializationOptions`
+                                -- You need to extend the `bundles` with paths to jar files
+                                -- if you want to use additional eclipse.jdt.ls plugins.
+                                --
+                                -- See https://github.com/mfussenegger/nvim-jdtls#java-debug-installation
+                                --
+                                init_options = {
+                                    bundles = {
+                                        vim.fn.glob(
+                                            '/home/irakli/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar',
+                                            true)
+                                    },
+                                },
+                                -- handlers = {
+                                --     ["language/status"] = function(_, result)
+                                --         -- print(result)
+                                --     end,
+                                --     ["$/progress"] = function(_, result, ctx)
+                                --         -- disable progress updates.
+                                --     end,
+                                -- },
+                            }
+                            require("jdtls").start_or_attach(config)
+                        end,
+                    })
+                    return true
+                end
             },
         }
     end,
