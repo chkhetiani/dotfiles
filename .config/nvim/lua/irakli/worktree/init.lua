@@ -8,8 +8,8 @@ local config = require('telescope.config').values
 
 local path = require('plenary.path'):new()
 
--- local log = require('plenary.log'):new()
--- log.level = 'debug'
+local log = require('plenary.log'):new()
+log.level = 'debug'
 
 local M = {}
 
@@ -89,13 +89,44 @@ M.show_worktree = function(opts)
 
                 create_symlink(selection.dir, (base .. 'current'))
             end)
+            vim.keymap.set({ "i", "v" }, "<c-r>", function()
+                local selection = action_state.get_selected_entry()
+                actions.close(prompt_buffer)
+
+                local command = {
+                    "git",
+                    "worktree",
+                    "remove",
+                    selection.display
+                }
+
+                local _ = vim.fn.system(table.concat(command, " "))
+            end)
+
+
             return true
         end
     }):find()
 end
 
--- TODO: new worktree
--- TODO: add keymap for remove worktree
+M.add_worktree = function(branch)
+    local command = {
+        "git",
+        "worktree",
+        "add",
+        "../" .. branch,
+        branch
+    }
+
+    local _ = vim.fn.system(table.concat(command, " "))
+end
+
+vim.api.nvim_create_user_command(
+    "WorktreeAdd",
+    function(opts)
+        M.add_worktree(opts.args)
+    end,
+    { nargs = 1 })
 
 vim.keymap.set("n", "<leader>wt", function() M.show_worktree({}) end, { desc = "show [W]ork[t]rees" })
 
