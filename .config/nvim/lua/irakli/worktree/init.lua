@@ -11,8 +11,20 @@ local path = require('plenary.path'):new()
 local log = require('plenary.log'):new()
 log.level = 'debug'
 
+local default_config = {
+    show_worktree = {
+        create_symlink = true,
+        symlink_path = 'current',
+    }
+}
+
+local user_config = {}
+
 local M = {}
 
+M.setup = function(user_opts)
+    user_config = vim.tbl_deep_extend("force", default_config, user_opts or {})
+end
 
 M.show_worktree = function(opts)
     pickers.new(opts, {
@@ -76,18 +88,20 @@ M.show_worktree = function(opts)
                     vim.api.nvim_command('edit ' .. selection.dir)
                 end
 
-                local function create_symlink(target, link)
-                    local link_path = path:new(link)
+                if user_config.show_worktree.create_symlink then
+                    local function create_symlink(target, link)
+                        local link_path = path:new(link)
 
-                    if link_path:exists() then
-                        link_path:rm()
+                        if link_path:exists() then
+                            link_path:rm()
+                        end
+
+                        local cmd = string.format('ln -s %s %s', vim.fn.shellescape(target), vim.fn.shellescape(link))
+                        vim.fn.system(cmd)
                     end
 
-                    local cmd = string.format('ln -s %s %s', vim.fn.shellescape(target), vim.fn.shellescape(link))
-                    vim.fn.system(cmd)
+                    create_symlink(selection.dir, (base .. user_config.show_worktree.symlink_path))
                 end
-
-                create_symlink(selection.dir, (base .. 'current'))
             end)
             vim.keymap.set({ "i", "v" }, "<c-r>", function()
                 local selection = action_state.get_selected_entry()
