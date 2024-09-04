@@ -1,15 +1,15 @@
 local pickers = require('telescope.pickers')
 local finders = require('telescope.finders')
 local actions = require('telescope.actions')
+local sorters = require('telescope.sorters')
 local action_state = require('telescope.actions.state')
 local previewers = require('telescope.previewers')
 local preview_utils = require('telescope.previewers.utils')
 local config = require('telescope.config').values
-
 local path = require('plenary.path'):new()
 
-local log = require('plenary.log'):new()
-log.level = 'debug'
+-- local log = require('plenary.log'):new()
+-- log.level = 'debug'
 
 local default_config = {
     show_worktree = {
@@ -27,20 +27,31 @@ M.setup = function(user_opts)
 end
 
 M.show_worktree = function(opts)
+    local base_path = vim.split(vim.fn.system('git worktree list | grep "(bare)"'), " ")[1] .. '/'
+
+    local worktrees = vim.split(vim.fn.system("git worktree list | awk '{print substr($3, 2, length($3) -2)}'"), "\n")
+
     pickers.new(opts, {
         finder = finders.new_async_job({
             command_generator = function()
-                return { "git", "worktree", "list" }
+                return { "git", "for-each-ref", "--sort=-committerdate", "--format", "'%(refname:short)'", "refs/heads/" }
             end,
             entry_maker = function(entry)
+                entry = entry:sub(2, -2)
                 local split = vim.split(entry, " ");
-                local name = split[#split]:sub(2, -2)
-                local dir = split[1]
+                local name = split[#split]
+
+                -- TODO: if current branch display *
+                local pre = '  '
+                if vim.tbl_contains(worktrees, entry) then
+                    pre = '+ '
+                end
+
                 return {
-                    value = entry,
-                    display = name,
-                    ordinal = name,
-                    dir = dir,
+                    value = name,
+                    display = pre .. entry,
+                    ordinal = entry,
+                    dir = name,
                 }
             end
         }),
@@ -51,7 +62,7 @@ M.show_worktree = function(opts)
                 local command = {
                     "git",
                     "log",
-                    entry.display,
+                    entry.ordinal,
                     "--graph",
                     '--pretty=format:"%h -%d %s (%ar)"',
                     "--abbrev-commit",
@@ -74,18 +85,30 @@ M.show_worktree = function(opts)
 
                 local file_without_base = current_file:sub(#cwd + 2);
 
-                local base = selection.dir:sub(0, #selection.dir - #selection.display)
+                local worktree_path = base_path .. selection.dir
 
-                vim.api.nvim_set_current_dir(selection.dir)
+                if not path:new(worktree_path):exists() then
+                    local command = {
+                        "git",
+                        "worktree",
+                        "add",
+                        worktree_path,
+                        selection.dir
+                    }
 
-                local p = selection.dir .. "/" .. file_without_base
+                    local _ = vim.fn.system(table.concat(command, " "))
+                end
+
+                vim.api.nvim_set_current_dir(worktree_path)
+
+                local p = worktree_path .. "/" .. file_without_base
 
                 local exists = path:new(p):exists()
 
                 if exists then
                     vim.api.nvim_command('edit ' .. p)
                 else
-                    vim.api.nvim_command('edit ' .. selection.dir)
+                    vim.api.nvim_command('edit ' .. worktree_path)
                 end
 
                 if user_config.show_worktree.create_symlink then
@@ -100,7 +123,7 @@ M.show_worktree = function(opts)
                         vim.fn.system(cmd)
                     end
 
-                    create_symlink(selection.dir, (base .. user_config.show_worktree.symlink_path))
+                    create_symlink(worktree_path, (base_path .. user_config.show_worktree.symlink_path))
                 end
             end)
             vim.keymap.set({ "i", "v" }, "<c-r>", function()
@@ -111,37 +134,17 @@ M.show_worktree = function(opts)
                     "git",
                     "worktree",
                     "remove",
-                    selection.display
+                    selection.ordinal
                 }
 
                 local _ = vim.fn.system(table.concat(command, " "))
             end)
-
 
             return true
         end
     }):find()
 end
 
-M.add_worktree = function(branch)
-    local command = {
-        "git",
-        "worktree",
-        "add",
-        "../" .. branch,
-        branch
-    }
-
-    local _ = vim.fn.system(table.concat(command, " "))
-end
-
-vim.api.nvim_create_user_command(
-    "WorktreeAdd",
-    function(opts)
-        M.add_worktree(opts.args)
-    end,
-    { nargs = 1 })
-
-vim.keymap.set("n", "<leader>wt", function() M.show_worktree({}) end, { desc = "show [W]ork[t]rees" })
+-- TODO: add user action to create new worktree from current worktree
 
 return M
