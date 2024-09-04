@@ -1,7 +1,6 @@
 local pickers = require('telescope.pickers')
 local finders = require('telescope.finders')
 local actions = require('telescope.actions')
-local sorters = require('telescope.sorters')
 local action_state = require('telescope.actions.state')
 local previewers = require('telescope.previewers')
 local preview_utils = require('telescope.previewers.utils')
