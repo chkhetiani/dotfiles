@@ -10,6 +10,7 @@ return {
         },
         'saadparwaiz1/cmp_luasnip',
         'hrsh7th/cmp-nvim-lsp',
+        'hrsh7th/cmp-nvim-lsp-signature-help',
         'hrsh7th/cmp-path',
         'rafamadriz/friendly-snippets',
     },
@@ -31,6 +32,10 @@ return {
 
         luasnip.add_snippets("java", {
             luasnip.parser.parse_snippet("fors", "for(int x = 0; x < settings.width; x++) {\n\tfor(int y = 0; y < settings.height; y++) {\n\t\t$0\n\t}\n}")
+        });
+
+        luasnip.add_snippets("java", {
+            luasnip.parser.parse_snippet("log", 'System.out.println("[log] ${1:var} = " + ${1});'),
         });
 
         require("luasnip.loaders.from_vscode").lazy_load()
@@ -65,6 +70,7 @@ return {
                 { name = 'luasnip' },
                 { name = 'path' },
                 { name = 'nvim_lua' },
+                { name = 'nvim_lsp_signature_help' },
             },
         }
     end,

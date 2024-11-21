@@ -18,6 +18,10 @@ return {
                     vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                 end
 
+                local vmap = function(keys, func, desc)
+                    vim.keymap.set('v', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+                end
+
                 map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
                 map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
                 map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
@@ -27,7 +31,8 @@ return {
                 map('<leader>f', vim.lsp.buf.format, '[F]ormat')
 
                 map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-                map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+                map('<leader>c', vim.lsp.buf.code_action, '[C]ode [A]ction')
+                vmap('<leader>c', vim.lsp.buf.code_action, '[C]ode [A]ction')
                 map('K', vim.lsp.buf.hover, 'Hover Do[k]umentation')
                 map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
@@ -56,7 +61,14 @@ return {
 
         local servers = {
             gopls = {},
-            tsserver = {},
+            ts_ls = {
+                init_options = {
+                    preferences = {
+                        importModuleSpecifierPreference = 'relative',
+                        importModuleSpecifierEnding = 'minimal',
+                    },
+                }
+            },
             omnisharp = {},
             jdtls = {
                 cmd = { '/home/irakli/.local/share/nvim/mason/bin/jdtls' },
@@ -140,7 +152,7 @@ return {
                                 -- for a list of options
                                 settings = {
                                     java = {
-                                        -- This doesn't work but let's keep it. 
+                                        -- This doesn't work but let's keep it.
                                         -- Might start working
                                         -- Never Know
                                         signatureHelp = { enabled = true },
@@ -181,6 +193,16 @@ return {
                                 -- },
                             }
                             require("jdtls").start_or_attach(config)
+                        end,
+                    })
+                    return true
+                end,
+                ts_ls = function()
+                    vim.api.nvim_create_autocmd("FileType", {
+                        pattern = "ts",
+                        callback = function(event)
+                            vim.keymap.set('n', '<leader>gi', "<Cmd>TSToolsOrganizeImports<CR>",
+                                { buffer = event.buf, desc = 'LSP: ' .. 'Or[g]anize [I]mports' })
                         end,
                     })
                     return true

@@ -78,7 +78,7 @@ M.show_worktree = function(opts)
                 local selection = action_state.get_selected_entry()
                 actions.close(prompt_buffer)
 
-                local cwd = vim.fn.getcwd();
+                local cwd = vim.loop.cwd();
                 local bufnr = vim.api.nvim_get_current_buf()
                 local current_file = vim.api.nvim_buf_get_name(bufnr)
 
@@ -125,19 +125,19 @@ M.show_worktree = function(opts)
                     create_symlink(worktree_path, (base_path .. user_config.show_worktree.symlink_path))
                 end
             end)
-            vim.keymap.set({ "i", "v" }, "<c-r>", function()
-                local selection = action_state.get_selected_entry()
-                actions.close(prompt_buffer)
-
-                local command = {
-                    "git",
-                    "worktree",
-                    "remove",
-                    selection.ordinal
-                }
-
-                local _ = vim.fn.system(table.concat(command, " "))
-            end)
+            -- vim.keymap.set({ "i", "v" }, "<c-r>", function()
+            --     local selection = action_state.get_selected_entry()
+            --     actions.close(prompt_buffer)
+            --
+            --     local command = {
+            --         "git",
+            --         "worktree",
+            --         "remove",
+            --         selection.ordinal
+            --     }
+            --
+            --     local _ = vim.fn.system(table.concat(command, " "))
+            -- end)
 
             return true
         end
