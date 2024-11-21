@@ -89,7 +89,7 @@ exec --no-startup-id dex-autostart --autostart --environment i3
 exec --no-startup-id "xss-lock -- i3lock -n -i ~/Pictures/Wallpapers/forest-b.png &"
 
 exec --no-startup-id nm-applet
-exec --no-startup-id "greenclip daemon &"
+exec --no-startup-id "/home/irakli/bin/greenclip daemon &"
 
 exec --no-startup-id ~/bin/mountgDrive.sh
 
@@ -109,7 +109,7 @@ bindsym Control+Shift+s exec "thunar /home/irakli/work/prototypes/stats/"
 
 bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+g exec --no-startup-id rofi -show filebrowser
-bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
+bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:/home/irakli/bin/greenclip print" -show clipboard -run-command '{cmd}'
 bindsym $mod+a exec --no-startup-id /home/irakli/bin/dir.sh
 bindsym $mod+z exec --no-startup-id /home/irakli/bin/terminal.sh
 bindsym $mod+x exec --no-startup-id "rofi -show p -modi p:'/home/irakli/bin/rofi-power-menu.sh'"
