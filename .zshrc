@@ -175,7 +175,7 @@ source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 alias e="cd .. && cd -"
 
-source ~/.fzf.zsh
+# source ~/.fzf.zsh
 # fzf history
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
