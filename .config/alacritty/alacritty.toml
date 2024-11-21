@@ -1,10 +1,12 @@
-import = ["/home/irakli/.config/alacritty/tokyo/tokyo.toml"]
 
 [font]
 size = 10
 
 [font.normal]
 family = "SauceCodePro Nerd Font"
+
+[general]
+import = ["/home/irakli/.config/alacritty/tokyo/tokyo.toml"]
 
 # [window]
 # opacity = 1.0
