@@ -54,25 +54,28 @@ M.show_worktree = function(opts)
                 }
             end
         }),
+        layout_config = {
+            width = 0.33,
+        },
         sorter = config.generic_sorter(opts),
-        previewer = previewers.new_buffer_previewer({
-            title = "Git branch preview",
-            define_preview = function(self, entry)
-                local command = {
-                    "git",
-                    "log",
-                    entry.ordinal,
-                    "--graph",
-                    '--pretty=format:"%h -%d %s (%ar)"',
-                    "--abbrev-commit",
-                    "--decorate"
-                }
-
-                local output = vim.fn.system(table.concat(command, " "))
-                vim.api.nvim_buf_set_lines(self.state.bufnr, 0, 0, true, vim.split(output, '\n'))
-                preview_utils.highlighter(self.state.bufnr, "git")
-            end
-        }),
+        -- previewer = previewers.new_buffer_previewer({
+        --     title = "Git branch preview",
+        --     define_preview = function(self, entry)
+        --         local command = {
+        --             "git",
+        --             "log",
+        --             entry.ordinal,
+        --             "--graph",
+        --             '--pretty=format:"%h -%d %s (%ar)"',
+        --             "--abbrev-commit",
+        --             "--decorate"
+        --         }
+        --
+        --         local output = vim.fn.system(table.concat(command, " "))
+        --         vim.api.nvim_buf_set_lines(self.state.bufnr, 0, 0, true, vim.split(output, '\n'))
+        --         preview_utils.highlighter(self.state.bufnr, "git")
+        --     end
+        -- }),
         attach_mappings = function(prompt_buffer)
             actions.select_default:replace(function()
                 local selection = action_state.get_selected_entry()
