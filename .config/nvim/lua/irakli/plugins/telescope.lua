@@ -28,6 +28,7 @@ return {
             builtin.grep_string({ search = vim.fn.input("Grep > ") });
         end)
 
+        vim.keymap.set('n', '<leader>to', builtin.buffers, {})
         vim.keymap.set('n', '<leader>td', builtin.diagnostics, {})
         vim.keymap.set('n', '<leader>tr', builtin.lsp_references, {})
         vim.keymap.set('n', '<leader>tb', builtin.builtin, {})
@@ -37,6 +38,10 @@ return {
         require("telescope").load_extension("ui-select")
 
         telescope.setup({
+            defaults = {
+                preview       = false,
+                layout_config = { width = 0.40 }
+            },
             pickers = {
                 git_branches = {
                     mappings = {
