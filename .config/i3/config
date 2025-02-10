@@ -103,9 +103,9 @@ exec --no-startup-id conky
 exec_always --no-startup-id ~/.config/i3/polybar.sh
 # exec_always --no-startup-id picom &
 
-bindsym Print exec --no-startup-id maim "/home/$USER/Pictures/Screenshots/$(date).png"
-bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/Screenshots/$(date).png"
-bindsym Shift+Print exec --no-startup-id pp="/home/$USER/Pictures/Screenshots/$(date).png" && maim -s -o --select --format png "$pp" && xclip -selection clipboard -t image/png "$pp"
+bindsym Print exec --no-startup-id maim "/home/$USER/Pictures/Screenshots/$(date +%y-%h-%d\ %H:%M:%S).png"
+bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/Screenshots/$(date +%y-%h-%d\ %H:%M:%S).png"
+bindsym Shift+Print exec --no-startup-id pp="/home/$USER/Pictures/Screenshots/$(date +%y-%h-%d\ %H:%M:%S).png" && maim -s -o --select --format png "$pp" && xclip -selection clipboard -t image/png "$pp"
 
 bindsym Control+Shift+s exec "thunar /home/irakli/work/prototypes/stats/"
 
