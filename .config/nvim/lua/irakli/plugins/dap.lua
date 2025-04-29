@@ -15,8 +15,8 @@ return {
         vim.keymap.set("n", "<leader>b", ":lua require'dap'.toggle_breakpoint()<CR>");
         vim.keymap.set("n", "<leader>B", ":lua require'dap'.set_breakpoint(vim.fn.input('Condition: '))<CR>");
 
-
         local dap = require('dap')
+        dap.set_log_level('DEBUG')
 
         vim.keymap.set("n", "<space>gb", dap.run_to_cursor)
 
@@ -46,41 +46,29 @@ return {
         }
 
 
-        dap.adapters.java = {
-            type = 'executable',
-            command = 'java',
-            args = { '-jar', '/home/irakli/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin-0.47.0.jar' },
-        }
+        -- dap.adapters.java = {
+        --     type = 'executable',
+        --     command = 'java',
+        --     args = { '-jar', '/home/irakli/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar' },
+        -- }
 
-        dap.configurations.java = {
-            {
-                type = 'java',
-                request = 'launch',
-                name = 'Debug Java Application',
-                mainClass = 'io.gcsd.maths.prototyping.prototypes.games.Pyramids',
-                program = "${file}",
-                stopOnEntry = false,
-                cwd = vim.fn.getcwd(),
-                classpath = "${workspaceFolder}/target/classes",
-                sourcePath = "${workspaceFolder}/src/main/java",
-                env = {
-                    CLASSPATH = "${workspaceFolder}/target/classes"
-                },
-            },
-        }
-
+        -- dap.adapters.java = {
+        --     type = 'server',
+        --     host = '127.0.0.1',
+        --     port = 5005,
+        --     initialize = function()
+        --         print("Connecting to 127.0.0.1:5005")
+        --     end,
+        -- }
+        --
         -- dap.configurations.java = {
-        --   {
-        --     type = 'java',
-        --     request = 'launch',
-        --     name = 'Debug Java Application',
-        --     args = {},
-        --     jvmArgs = {},
-        --     classPaths = {},
-        --     sourcePaths = {},
-        --     modulePaths = {},
-        --     workspaceFolder = '${workspaceFolder}',
-        --   },
+        --     {
+        --         type = 'java',
+        --         request = 'attach',
+        --         name = 'Debug (Attach) - Remote Jetty',
+        --         hostName = '127.0.0.1',
+        --         port = 5005,
+        --     },
         -- }
 
         dap.adapters.delve = {

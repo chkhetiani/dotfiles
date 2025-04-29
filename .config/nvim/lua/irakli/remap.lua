@@ -30,3 +30,6 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 vim.keymap.set("n", "<leader>vpp", "<cmd>e ~/.config/nvim/lua/irakli/init.lua<CR>");
 
 vim.keymap.set("n", "<leader>lsp", "<cmd>LspRestart<CR>")
+vim.keymap.set("n", "<leader>ww", ":wa<CR>")
+vim.keymap.set("n", "<leader>oo", ":lua vim.ui.open(vim.loop.cwd())<CR>")
+vim.keymap.set("n", "<leader>mi", ":!mvn install -f pom.xml<CR>")

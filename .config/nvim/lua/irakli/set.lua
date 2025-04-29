@@ -35,8 +35,12 @@ vim.keymap.set("n", " ", "<Nop>")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-
 vim.g.netrw_banner = 0
+
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldlevel = 1
+vim.opt.foldenable = false
 
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', eol = '↵', nbsp = '␣' }

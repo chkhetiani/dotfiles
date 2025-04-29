@@ -123,9 +123,11 @@ bindkey '^n' autosuggest-execute
 # aliases
 #
 alias vpnon="/opt/cisco/anyconnect/bin/vpn -s < ~/Documents/vpn.txt"
+alias vi="vim"
 alias vim="nvim"
-alias minstall="mvn install -f pom.xml"
+alias minstall="cdc && mvn install -f pom.xml"
 alias c=clear
+alias cdc="cd ~/work/prototypes/current/"
 
 # git aliases
 alias ga="git add ."
@@ -148,7 +150,7 @@ function limit {
 
 # functions
 function mrun() {
-	mvn jetty:run -f games/pom.xml
+    cdc && mvn jetty:run -f games/pom.xml
 }
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
