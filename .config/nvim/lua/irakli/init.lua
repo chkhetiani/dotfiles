@@ -12,3 +12,14 @@ vim.keymap.set("n", "<leader>wt", function() worktree.show_worktree({}) end, { d
 vim.keymap.set("n", "<leader>wc", ":WorkTreeCreate x<CR>", { desc = "[C]reate [W]orktree" })
 vim.keymap.set("n", "<leader>wr", ":WorkTreeRemove x<CR>", { desc = "[R]remove [W]orktree" })
 vim.keymap.set("n", "<leader>os", function() stats.open(); end, { desc = "Open Stats" })
+
+vim.api.nvim_create_autocmd("DirChanged", {
+    pattern = "*",
+    callback = function()
+        local lazy = require("lazy")
+        local plugin_name = "harpoon"
+        lazy.reload({ plugins = { plugin_name } })
+        local harpoon = require("harpoon")
+        harpoon:setup()
+    end
+})
