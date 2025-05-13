@@ -138,7 +138,11 @@ for_window [class="Protonvpn-app" instance="protonvpn-app"] floating enable
 for_window [class="SimpleScreenRecorder" instance="simplescreenrecorder"] floating enable
 for_window [class="Xfce4-terminal" instance="xfce4-terminal"] floating enable
 
-client.focused #7AA2F7 #7AA2F7 #292F34
+client.focused #ED4013 #ED4013 #292F34
+# blue 
+# client.focused #7AA2F7 #7AA2F7 #292F34
+# light red 
+# client.focused #EF7643 #EF7643 #292F34
 
 gaps inner 10
 gaps outer 0
