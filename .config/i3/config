@@ -118,6 +118,7 @@ bindsym $mod+z exec --no-startup-id /home/irakli/bin/terminal.sh
 bindsym $mod+b exec --no-startup-id /home/irakli/bin/colorpicker.sh
 bindsym $mod+x exec --no-startup-id "rofi -show p -modi p:'/home/irakli/bin/rofi-power-menu.sh'"
 bindsym $mod+t exec --no-startup-id "xfce4-terminal -x ~/bin/tasks"
+bindsym $mod+o exec --no-startup-id /home/irakli/bin/reconnect.sh
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
