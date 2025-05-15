@@ -118,8 +118,8 @@ ${goto 12}${voffset 5}${color1}${top_mem name 1}$alignr$color${top_mem mem_res 1
 ${goto 12}${color1}${top_mem name 2}$alignr$color${top_mem mem_res 2}
 ${goto 12}${color1}${top_mem name 3}$alignr$color${top_mem mem_res 3}
 ${color1}${hr}${color}${voffset 5}
-${color1}EUR${color}$alignr${if_match "${execi 18000 ~/bin/currency_eur.sh | grep -oP '^.'}" == "↓"}${color5}${execi 18000 ~/bin/currency_eur.sh}${else}${color color3}${execi 18000 ~/bin/currency_eur.sh}${endif}${color}
-${color1}USD${color}$alignr${if_match "${execi 18000 ~/bin/currency_usd.sh | grep -oP '^.'}" == "↓"}${color5}${execi 18000 ~/bin/currency_usd.sh}${else}${color color3}${execi 18000 ~/bin/currency_usd.sh}${endif}${color}
+${color1}EUR${color}$alignr${if_match "${execi 18000 ~/bin/currency_eur.sh | grep -oP '^.'}" == "↓"}${color3}${execi 18000 ~/bin/currency_eur.sh}${else}${color5}${execi 18000 ~/bin/currency_eur.sh}${endif}${color}
+${color1}USD${color}$alignr${if_match "${execi 18000 ~/bin/currency_usd.sh | grep -oP '^.'}" == "↓"}${color3}${execi 18000 ~/bin/currency_usd.sh}${else}${color5}${execi 18000 ~/bin/currency_usd.sh}${endif}${color}
 # ${color1}USD${color}$alignr${execi 18000 curl https://nbg.gov.ge/gw/api/ct/monetarypolicy/currencies/ka/json/\?currencies\=USD | jq '.[0].currencies[0].rate'}
 # ${color1}EUR${color}$alignr${execi 18000 curl https://nbg.gov.ge/gw/api/ct/monetarypolicy/currencies/ka/json/\?currencies\=EUR | jq '.[0].currencies[0].rate'}
 ]];
