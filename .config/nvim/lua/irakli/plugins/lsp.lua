@@ -9,7 +9,7 @@ return {
     },
     config = function()
         vim.lsp.set_log_level("off")
-        -- vim.lsp.set_log_level("debug")
+        vim.lsp.set_log_level("debug")
 
         -- LSP Attach Keymaps (unchanged)
         vim.api.nvim_create_autocmd('LspAttach', {
@@ -82,7 +82,12 @@ return {
             },
         }
 
-        require('mason').setup()
+        require('mason').setup({
+            registries = {
+                "github:mason-org/mason-registry",
+                "github:Crashdummyy/mason-registry",
+            }
+        });
         local ensure_installed = vim.tbl_keys(servers or {})
         require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -93,6 +98,19 @@ return {
                     { buffer = event.buf, desc = 'LSP: Or[g]anize [I]mports' })
                 vim.keymap.set('n', '<leader>gm', "<Cmd>TSToolsAddMissingImports<CR>",
                     { buffer = event.buf, desc = 'LSP: Add missin[g] i[m]ports' })
+            end,
+        })
+
+        vim.api.nvim_create_autocmd("FileType", {
+            pattern = "go",
+            callback = function(event)
+                local bufopts = { noremap = true, silent = true }
+                vim.keymap.set('n', '<leader>gi', function()
+                    vim.lsp.buf.code_action({
+                        context = { diagnostics = {}, only = { 'source.organizeImports' }, },
+                        apply = true
+                    })
+                end, vim.tbl_extend('force', bufopts, { desc = 'Organize Imports' }))
             end,
         })
 
@@ -119,7 +137,8 @@ return {
 
                             local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
                             local workspace_dir = '/home/irakli/.local/share/java_workspaces/' .. project_name
-                            local java_debug_path = '/home/irakli/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar'
+                            local java_debug_path =
+                            '/home/irakli/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar'
 
                             local config = {
                                 cmd = {
