@@ -11,6 +11,8 @@ return {
         vim.lsp.set_log_level("off")
         vim.lsp.set_log_level("debug")
 
+        vim.diagnostic.config({ virtual_text = true })
+
         -- LSP Attach Keymaps (unchanged)
         vim.api.nvim_create_autocmd('LspAttach', {
             group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
