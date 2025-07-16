@@ -84,6 +84,12 @@ return {
         dap.configurations.go = {
             {
                 type = "delve",
+                name = "Debug .",
+                request = "launch",
+                program = "."
+            },
+            {
+                type = "delve",
                 name = "Debug",
                 request = "launch",
                 program = "${file}"

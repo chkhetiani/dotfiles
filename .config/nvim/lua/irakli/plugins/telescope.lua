@@ -39,8 +39,8 @@ return {
 
         telescope.setup({
             defaults = {
-                preview       = false,
-                layout_config = { width = 0.40 }
+                -- preview       = false,
+                -- layout_config = { width = 0.40 }
             },
             pickers = {
                 git_branches = {

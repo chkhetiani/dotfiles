@@ -8,7 +8,7 @@ return {
         'mfussenegger/nvim-jdtls',
     },
     config = function()
-        vim.lsp.set_log_level("off")
+        -- vim.lsp.set_log_level("off")
         vim.lsp.set_log_level("debug")
 
         vim.diagnostic.config({ virtual_text = true })
@@ -23,6 +23,9 @@ return {
                 local vmap = function(keys, func, desc)
                     vim.keymap.set('v', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
                 end
+                local imap = function(keys, func, desc)
+                    vim.keymap.set('i', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+                end
                 map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
                 map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
                 map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
@@ -31,6 +34,7 @@ return {
                 map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
                 map('<leader>f', vim.lsp.buf.format, '[F]ormat')
                 map('<C-s>', vim.lsp.buf.signature_help, '[S]ignature help')
+                imap('<C-s>', vim.lsp.buf.hover, '[S]ignature help')
                 map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
                 map('<leader>c', vim.lsp.buf.code_action, '[C]ode [A]ction')
                 vmap('<leader>c', vim.lsp.buf.code_action, '[C]ode [A]ction')
@@ -55,16 +59,18 @@ return {
 
         local servers = {
             gopls = {},
-            ts_ls = {
-                init_options = {
-                    preferences = {
-                        importModuleSpecifierPreference = 'relative',
-                        importModuleSpecifierEnding = 'minimal',
-                    },
-                }
-            },
-            omnisharp = {},
-            jdtls = {}, -- Simplified, as we handle it in the handler
+            -- ts_ls = {
+            --     init_options = {
+            --         preferences = {
+            --             importModuleSpecifierPreference = 'relative',
+            --             importModuleSpecifierEnding = 'minimal',
+            --         },
+            --     }
+            -- },
+            -- omnisharp = {},
+            -- jdtls = {
+            --     root_dir = vim.fs.root(0, { ".git", "mvnw", "gradlew" }),
+            -- },
             lua_ls = {
                 settings = {
                     Lua = {
@@ -117,77 +123,29 @@ return {
         })
 
         require('mason-lspconfig').setup {
+            ensure_installed = {},
+            automatic_enable = {
+                exclude = {},
+            },
             handlers = {
                 function(server_name)
                     local server = servers[server_name] or {}
                     server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
                     require('lspconfig')[server_name].setup(server)
                 end,
-                jdtls = function()
-                    vim.api.nvim_create_autocmd("FileType", {
-                        pattern = "java",
-                        callback = function(event)
-                            local map = function(mode, keys, func, desc)
-                                vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-                            end
-                            map('n', '<leader>gi', require('jdtls').organize_imports, '[O]rganize [I]mports')
-                            map('v', '<leader>de', '<Esc><Cmd>lua require("jdtls").extract_variable(true)<CR>',
-                                'Extract Variable')
-                            map('n', '<leader>de', require('jdtls').extract_variable, 'Extract Variable')
-                            map('v', '<leader>dm', '<Esc><Cmd>lua require("jdtls").extract_method(true)<CR>',
-                                'Extract Method')
-
-                            local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
-                            local workspace_dir = '/home/irakli/.local/share/java_workspaces/' .. project_name
-                            local java_debug_path =
-                            '/home/irakli/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar'
-
-                            local config = {
-                                cmd = {
-                                    'java',
-                                    '-Declipse.application=org.eclipse.jdt.ls.core.id1',
-                                    '-Dosgi.bundles.defaultStartLevel=4',
-                                    '-Declipse.product=org.eclipse.jdt.ls.core.product',
-                                    '-Dlog.protocol=true',
-                                    '-Dlog.level=ALL',
-                                    '-Xmx1g',
-                                    '--add-modules=ALL-SYSTEM',
-                                    '--add-opens', 'java.base/java.util=ALL-UNNAMED',
-                                    '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-                                    '-jar',
-                                    '/home/irakli/.local/share/nvim/mason/share/jdtls/plugins/org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar',
-                                    '-configuration', '/home/irakli/.local/share/nvim/mason/share/jdtls/config',
-                                    '-data', workspace_dir
-                                },
-                                root_dir = vim.fs.root(0, { ".git", "mvnw", "gradlew" }),
-                                settings = {
-                                    java = {
-                                        signatureHelp = { enabled = true },
-                                        contentProvider = { preferred = 'fernflower' },
-                                        completion = {
-                                            favoriteStaticMembers = { "java.util.*" },
-                                            filteredTypes = { "com.sun.*" },
-                                        },
-                                    }
-                                },
-                                init_options = {
-                                    bundles = { java_debug_path },
-                                },
-                                -- Add DAP integration
-                                on_attach = function(client, bufnr)
-                                    require('jdtls').setup_dap({ hotcodereplace = 'auto' })
-                                    require('jdtls.dap').setup_dap_main_class_configs()
-                                end,
-                            }
-                            require("jdtls").start_or_attach(config)
-                        end,
-                    })
-                    return true
-                end,
+                -- jdtls = function()
+                    -- local java = require('irakli.java')
+                    -- java.Init();
+                    -- return true
+                -- end,
                 ts_ls = function()
                     return true
                 end
             },
         }
+
+        local java = require('irakli.java')
+        java.Init();
+
     end,
 }
