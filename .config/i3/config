@@ -139,6 +139,9 @@ for_window [class="Protonvpn-app" instance="protonvpn-app"] floating enable
 for_window [class="SimpleScreenRecorder" instance="simplescreenrecorder"] floating enable
 for_window [class="Xfce4-terminal" instance="xfce4-terminal"] floating enable
 for_window [class="Localsend" instance="localsend"] floating enable
+# for_window [class="AlacrittyThunar" instance="AlacrittyThunar"] floating enable
+for_window [class="AlacrittyThunar"] floating enable, resize set 713 402, move position 585 628
+
 
 client.focused #ED4013 #ED4013 #292F34
 # blue 
