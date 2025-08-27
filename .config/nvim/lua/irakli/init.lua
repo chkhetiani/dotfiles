@@ -2,6 +2,7 @@ require("irakli.set")
 require("irakli.remap")
 require("irakli.lazy")
 require("irakli.open_stats")
+require("irakli.jdb")
 
 local worktree = require("irakli.worktree")
 local stats = require("irakli.open_stats")

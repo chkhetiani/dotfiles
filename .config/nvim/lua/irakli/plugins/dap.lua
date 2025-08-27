@@ -45,6 +45,24 @@ return {
             }
         }
 
+        dap.adapters.java = {
+            type = 'executable',
+            command = 'java',
+            args = {
+                '-jar',
+                '/home/irakli/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar'
+            },
+        }
+
+        dap.configurations.java = {
+            {
+                type = 'java',
+                request = 'attach',
+                name = 'Attach to Jetty',
+                hostName = '127.0.0.1',
+                port = 5005,
+            },
+        }
 
         -- dap.adapters.java = {
         --     type = 'executable',

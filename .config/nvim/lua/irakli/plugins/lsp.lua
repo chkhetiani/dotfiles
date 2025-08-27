@@ -88,7 +88,55 @@ return {
                     },
                 },
             },
-        }
+    clangd = {
+                cmd = {
+                    'clangd',
+                    '--offset-encoding=utf-16',
+                    '--clang-tidy',
+                    '--cross-file-rename',
+                    '--fallback-style=Chromium',
+                },
+                root_dir = require('lspconfig.util').root_pattern('compile_commands.json', '.git'),
+                single_file_support = false,
+                on_attach = function(client, bufnr)
+                    client.server_capabilities.semanticTokensProvider = nil
+                    require('lspconfig').clangd.default_on_attach(client, bufnr)
+                end,
+                settings = {
+                    clangd = {
+                        fallbackFlags = {
+                            '-std=c++20',
+                            '-Wall',
+                            '-Wextra',
+                            '-pedantic',
+                        },
+                        checkUpdates = true,
+                        semanticHighlighting = true,
+                        ['use.clang-format'] = true,
+                        ['clangd.format.style'] = 'file',
+                    },
+                    ['clang-format'] = {
+                        style = 'file',
+                    },
+                },
+            },
+            ['clang-format'] = {
+                style = 'file',
+                config = {
+                    BasedOnStyle = 'Google',
+                    IndentWidth = 4,
+                    UseTab = 'Never',
+                    BreakBeforeBraces = 'Allman',
+                },
+            },
+        };
+
+        vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+            pattern = "*.cl",
+            callback = function()
+                vim.bo.filetype = "c"
+            end,
+        })
 
         require('mason').setup({
             registries = {
@@ -134,9 +182,9 @@ return {
                     require('lspconfig')[server_name].setup(server)
                 end,
                 -- jdtls = function()
-                    -- local java = require('irakli.java')
-                    -- java.Init();
-                    -- return true
+                -- local java = require('irakli.java')
+                -- java.Init();
+                -- return true
                 -- end,
                 ts_ls = function()
                     return true
@@ -146,6 +194,5 @@ return {
 
         local java = require('irakli.java')
         java.Init();
-
     end,
 }

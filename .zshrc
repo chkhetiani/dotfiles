@@ -128,6 +128,8 @@ alias vim="nvim"
 alias minstall="cdc && mvn install -f pom.xml"
 alias c=clear
 alias cdc="cd ~/work/prototypes/current/"
+alias mdebug="export MAVEN_OPTS=\"-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005\""
+alias mreset="export MAVEN_OPTS=\"\""
 
 # git aliases
 alias ga="git add ."
@@ -183,6 +185,8 @@ HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 setopt appendhistory
+
+export MAVEN_OPTS="-ea"
 
 
 export MANPAGER="nvim -c 'Man!' -"

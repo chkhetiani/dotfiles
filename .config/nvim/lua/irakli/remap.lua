@@ -33,3 +33,8 @@ vim.keymap.set("n", "<leader>lsp", "<cmd>LspRestart<CR>")
 vim.keymap.set("n", "<leader>ww", ":wa<CR>")
 vim.keymap.set("n", "<leader>oo", ":lua vim.ui.open(vim.loop.cwd())<CR>")
 vim.keymap.set("n", "<leader>mi", ":!mvn install -f pom.xml<CR>")
+
+vim.keymap.set("n", "<leader>gcc", function()
+  vim.fn.delete(vim.fn.expand("~/.cache/jdtls"), "rf")
+  vim.cmd("LspRestart")
+end, { desc = "Clear JDTLS cache and restart LSP" })
