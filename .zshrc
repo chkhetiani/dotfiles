@@ -141,6 +141,7 @@ alias gc="git commit -m"
 alias gb="git branch | cat"
 alias gpu="git pull"
 alias grs="git checkout -- stats/"
+alias gll="git log \$(git merge-base master random-debug)..HEAD"
 
 
 function limit {

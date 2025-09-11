@@ -1,0 +1,5 @@
+[general]
+import = ["/home/irakli/.config/alacritty/alacritty.toml"]
+
+[font]
+size = 15

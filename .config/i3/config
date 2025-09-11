@@ -119,6 +119,9 @@ bindsym $mod+b exec --no-startup-id /home/irakli/bin/colorpicker.sh
 bindsym $mod+x exec --no-startup-id "rofi -show p -modi p:'/home/irakli/bin/rofi-power-menu.sh'"
 bindsym $mod+t exec --no-startup-id "xfce4-terminal -x ~/bin/tasks"
 bindsym $mod+o exec --no-startup-id /home/irakli/bin/reconnect.sh
+# bindsym $mod+Shift+n exec --no-startup-id /home/irakli/bin/new_game
+bindsym $mod+Shift+n exec --no-startup-id alacritty --class AlacrittyThunar --config-file ~/.config/alacritty/floating.toml -e /home/irakli/bin/new_game
+
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -143,11 +146,13 @@ for_window [class="Localsend" instance="localsend"] floating enable
 for_window [class="AlacrittyThunar"] floating enable, resize set 713 402, move position 585 628
 
 
+
 client.focused #ED4013 #ED4013 #292F34
 # blue 
 # client.focused #7AA2F7 #7AA2F7 #292F34
 # light red 
 # client.focused #EF7643 #EF7643 #292F34
+
 
 gaps inner 10
 gaps outer 0

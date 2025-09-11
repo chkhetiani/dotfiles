@@ -1,0 +1,16 @@
+#!/bin/bash
+
+name=$(gum input --placeholder="game_name")
+echo "Name: $name"
+version=$(gum input --placeholder="version")
+echo "Version: $version"
+
+if [[ -n "$name" && -n "$version" ]]; then
+    base="/home/irakli/work/math/${name}_${version}"
+    mkdir -p "$base/origin" "$base/sims"
+    thunar "$base"
+else
+    echo "❌ Both name and version must be provided (non-empty)."
+    exit 1
+fi
+
