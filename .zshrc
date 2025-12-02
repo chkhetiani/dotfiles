@@ -103,8 +103,15 @@ source $ZSH/oh-my-zsh.sh
 #
 fpath+=($HOME/.zsh/pure)
 autoload -U promptinit; promptinit
+autoload -U prompt pure
+
+autoload -Uz async
+prompt_pure_setup
+
 prompt pure
 
+prompt_newline='%666v'
+PROMPT=" $PROMPT"
 
 JAVA_HOME=$(readlink -f /user/bin/javac | sed "s:/bin/javac::")
 export JAVA_HOME
@@ -112,9 +119,6 @@ PATH="$JAVA_HOME/bin:$PATH"
 PATH="/home/irakli/.local/bin:$PATH"
 export PATH
 
-prompt pure
-prompt_newline='%666v'
-PROMPT=" $PROMPT"
 
 
 bindkey '^y' autosuggest-accept
@@ -191,3 +195,21 @@ export MAVEN_OPTS="-ea"
 
 
 export MANPAGER="nvim -c 'Man!' -"
+
+export NVM_DIR="$HOME/.nvm"
+
+nvm() {
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  command nvm "$@"
+}
+
+
+# pnpm
+export PNPM_HOME="/home/irakli/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end

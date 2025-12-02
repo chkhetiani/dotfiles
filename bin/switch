@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+
+BASE_DIR="$HOME/personal/nope"
+
+echo "Multi-Project Startup"
+echo ""
+
+REPO_CHOICE=$(gum choose --header "List branches from which repository?" "core" "client")
+if [[ -z "$REPO_CHOICE" ]]; then
+    echo "Error: Repository selection is required"
+    exit 1
+fi
+
+# Determine the branch prefix based on repo choice
+if [[ "$REPO_CHOICE" == "core" ]]; then
+    BRANCH_PREFIX="core/"
+    REPO_PATH="$BASE_DIR/core"
+else
+    BRANCH_PREFIX="game/"
+    REPO_PATH="$BASE_DIR/client"
+fi
+
+# Get branches and let user select with fzf
+cd "$REPO_PATH" || exit 1
+FULL_BRANCH=$(git branch -a | grep "$BRANCH_PREFIX" | sed 's/remotes\/origin\///' | sed 's/^[ *]*//' | sort -u | fzf --height 40% --reverse --header "Select branch from $REPO_CHOICE")
+
+if [[ -z "$FULL_BRANCH" ]]; then
+    echo "Error: Branch selection is required"
+    exit 1
+fi
+
+# Extract the suffix after the prefix
+BRANCH_SUFFIX=${FULL_BRANCH#$BRANCH_PREFIX}
+
+if [[ -z "$BRANCH_SUFFIX" ]]; then
+    echo "Error: Could not extract branch suffix from $FULL_BRANCH"
+    exit 1
+fi
+
+cd - > /dev/null
+
+USE_NPM=$(gum choose --header "Select package manager for client:" "npm" "pnpm")
+if [[ -z "$USE_NPM" ]]; then
+    echo "Error: Package manager selection is required"
+    exit 1
+fi
+
+echo ""
+gum style --border rounded --padding "1 2" --margin "1" \
+    "Starting multi-project setup..." \
+    "" \
+    "Branch suffix: $(gum style --foreground 212 "$BRANCH_SUFFIX")" \
+    "Client package manager: $(gum style --foreground 212 "$USE_NPM")"
+
+# Confirmation
+gum confirm "Proceed with this configuration?" || exit 0
+
+echo ""
+gum spin --spinner dot --title "Initializing projects..." -- sleep 1
+
+# Function to create or recreate tmux session
+setup_session() {
+    local session_name=$1
+    local directory=$2
+    local commands=$3
+    local open_nvim=$4
+
+    tmux_running=$(pgrep tmux)
+
+    # Kill existing session if it exists
+    if tmux has-session -t="$session_name" 2> /dev/null; then
+        tmux kill-session -t "$session_name"
+    fi
+
+    # Create new detached session
+    if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+        tmux new-session -s "$session_name" -c "$directory" -d
+    else
+        tmux new-session -ds "$session_name" -c "$directory"
+    fi
+
+    # Send commands to the session
+    tmux send-keys -t "$session_name" "$commands" C-m
+
+    # Open neovim in a new window if requested
+    if [[ "$open_nvim" == "true" ]]; then
+        tmux new-window -t "$session_name" -n "nvim" -c "$directory"
+        tmux send-keys -t "$session_name:nvim" "nvim" C-m
+        # Switch back to the first window
+        tmux select-window -t "$session_name:0"
+    fi
+}
+
+# 1. Setup Core project session
+gum spin --spinner dot --title "Setting up Core project..." -- sleep 0.5
+CORE_COMMANDS="git checkout core/$BRANCH_SUFFIX && cd Game && dotnet run"
+setup_session "core" "$BASE_DIR/core" "$CORE_COMMANDS" "true"
+
+# 2. Setup bg-runner project session
+gum spin --spinner dot --title "Setting up bg-runner project..." -- sleep 0.5
+RUNNER_COMMANDS="./runner_cli-x86_64-unknown-linux-gnu -p 4001 -c config.yml"
+setup_session "bg-runner" "$BASE_DIR/bg-runner" "$RUNNER_COMMANDS" "false"
+
+# 3. Setup Client project session
+gum spin --spinner dot --title "Setting up Client project..." -- sleep 0.5
+if [[ "$USE_NPM" == "npm" ]]; then
+    CLIENT_COMMANDS="git checkout game/$BRANCH_SUFFIX && npm i && npm start -- --port=8081"
+else
+    CLIENT_COMMANDS="git checkout game/$BRANCH_SUFFIX && pnpm i && PORT=8081 pnpm --filter @game/app start:bc"
+fi
+setup_session "client" "$BASE_DIR/client" "$CLIENT_COMMANDS" "true"
+
+echo ""
+gum style --border double --padding "1 2" --margin "1" \
+    "$(gum style --foreground 212 --bold '✓ All project sessions started!')" \
+    "" \
+    "$(gum style --foreground 245 '→') core: Running dotnet in core/Game (branch: core/$BRANCH_SUFFIX)" \
+    "$(gum style --foreground 245 '→') bg-runner: Running runner_cli on port 4001" \
+    "$(gum style --foreground 245 '→') client: Running on port 8081 (branch: game/$BRANCH_SUFFIX)" \
+    "" \
+    "$(gum style --foreground 240 --italic 'Switch sessions with:')" \
+    "$(gum style --foreground 240 '  tmux attach -t core')" \
+    "$(gum style --foreground 240 '  tmux attach -t bg-runner')" \
+    "$(gum style --foreground 240 '  tmux attach -t client')"
+
+# If inside tmux, offer to switch to a session
+if [[ -n $TMUX ]]; then
+    echo ""
+    SESSION_CHOICE=$(gum choose --header "Switch to which session?" "core" "bg-runner" "client" "Stay here")
+    if [[ "$SESSION_CHOICE" != "Stay here" && -n "$SESSION_CHOICE" ]]; then
+        tmux switch-client -t "$SESSION_CHOICE"
+    fi
+else
+    # If not in tmux, offer to attach
+    echo ""
+    SESSION_CHOICE=$(gum choose --header "Attach to which session?" "core" "bg-runner" "client" "Exit")
+    if [[ "$SESSION_CHOICE" != "Exit" && -n "$SESSION_CHOICE" ]]; then
+        tmux attach -t "$SESSION_CHOICE"
+    fi
+fi

@@ -22,4 +22,26 @@
 	<range>*</range>
 	<patterns>*</patterns>
 </action>
+<action>
+	<icon>application-x-zip</icon>
+	<name>unzip</name>
+	<submenu></submenu>
+	<unique-id>1764660345610706-1</unique-id>
+	<command>unzip %n</command>
+	<description>unzip archive</description>
+	<range>*</range>
+	<patterns>*.zip</patterns>
+	<other-files/>
+</action>
+<action>
+	<icon>application-x-gzip</icon>
+	<name>zip</name>
+	<submenu></submenu>
+	<unique-id>1764660515341932-2</unique-id>
+	<command>zip -r %n.zip %n</command>
+	<description>zips the directory</description>
+	<range>*</range>
+	<patterns>*</patterns>
+	<directories/>
+</action>
 </actions>

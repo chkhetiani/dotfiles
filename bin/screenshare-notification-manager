@@ -1,0 +1,33 @@
+#!/bin/bash
+
+POLL_INTERVAL=2
+is_sharing=false
+
+while true; do
+    sharing_now=false
+
+    # Check Google Meet (looks for "is sharing your screen" in window title)
+    if i3-msg -t get_tree | grep -q "is sharing your screen"; then
+        sharing_now=true
+    fi
+
+    # Check Slack (looks for floating Slack window that appears during screen share)
+    slack_floating=$(i3-msg -t get_tree | jq '[.. | select(.window_properties?.class? == "Slack" and .floating? == "auto_on")] | length' 2>/dev/null)
+    if [ "$slack_floating" -gt 0 ]; then
+        sharing_now=true
+    fi
+
+    # Handle state changes
+    if [ "$sharing_now" = true ] && [ "$is_sharing" = false ]; then
+        notify-send "Paused notifications - screen sharing detected"
+        sleep 2
+        dunstctl set-paused true
+        is_sharing=true
+    elif [ "$sharing_now" = false ] && [ "$is_sharing" = true ]; then
+        dunstctl set-paused false
+        notify-send "Resumed notifications - screen sharing ended"
+        is_sharing=false
+    fi
+
+    sleep $POLL_INTERVAL
+done

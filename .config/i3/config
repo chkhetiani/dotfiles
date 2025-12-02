@@ -5,6 +5,7 @@ font pango:monospace 8
 floating_modifier $mod
 
 bindsym $mod+Return exec alacritty
+bindsym $mod+Shift+Return exec alacritty --class AlacrittyThunar --config-file ~/.config/alacritty/floating.toml
 
 bindsym $mod+Shift+q kill
 
@@ -99,6 +100,10 @@ exec --no-startup-id /usr/libexec/gsd-xsettings
 exec --no-startup-id "setxkbmap -model pc104 -layout us,ge -option grp:alt_shift_toggle"
 exec --no-startup-id "nitrogen --restore"
 exec --no-startup-id conky
+exec --no-startup-id ~/bin/screenshare-notification-manager
+
+exec --no-startup-id vmtouch -l -d /home/irakli/work/math
+
 
 exec_always --no-startup-id ~/.config/i3/polybar.sh
 # exec_always --no-startup-id picom &
@@ -147,9 +152,9 @@ for_window [class="AlacrittyThunar"] floating enable, resize set 713 402, move p
 
 
 
-client.focused #ED4013 #ED4013 #292F34
+# client.focused #ED4013 #ED4013 #292F34
 # blue 
-# client.focused #7AA2F7 #7AA2F7 #292F34
+client.focused #7AA2F7 #7AA2F7 #292F34
 # light red 
 # client.focused #EF7643 #EF7643 #292F34
 

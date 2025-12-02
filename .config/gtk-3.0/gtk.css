@@ -1,0 +1,37 @@
+/* /* Sidebar / tree selection */ */
+/* .sidebar .view:selected, */
+/* .sidebar .view:selected:focus { */
+/*     background-color: #a3d977; */
+/*     color: black; */
+/* } */
+/**/
+/* /* Main file list (both list + icon modes) */ */
+/* .view:selected, */
+/* .view:selected:focus { */
+/*     background-color: #a3d977; /* your color */ */
+/*     color: black; */
+/* } */
+/**/
+/* /* Optional: remove blue focus ring */ */
+/* .view:selected:focus { */
+/*     outline: none; */
+/* } */
+/* .thunar .view:selected { */
+/*     background-color: #a3d977; */
+/*     color: black; */
+/* } */
+/* ExoTreeView:selected, */
+/* ExoTreeView:selected:focus { */
+/*     background-color: #ff0000;   /* your preferred color */ */
+/*     color: #000000; */
+/* } */
+/* ExoTreeView.view:selected { */
+/*     background-color: #FF0000; */
+/* } */
+/**/
+/* /* Optional: remove the blue border when focused */ */
+/* ExoTreeView:selected:focus { */
+/*     outline: none; */
+/* } */
+/**/
+
