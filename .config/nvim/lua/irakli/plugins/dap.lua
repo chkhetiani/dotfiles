@@ -1,19 +1,19 @@
 return {
     'mfussenegger/nvim-dap',
     dependencies = {
-        'rcarriga/nvim-dap-ui',
+        -- 'rcarriga/nvim-dap-ui',
         'mfussenegger/nvim-jdtls',
         'theHamsta/nvim-dap-virtual-text',
         'nvim-neotest/nvim-nio'
         -- 'leoluz/nvim-dap-go',
     },
     config = function()
-        vim.keymap.set("n", "<F1>", ":lua require'dap'.step_into()<CR>");
-        vim.keymap.set("n", "<F2>", ":lua require'dap'.step_over()<CR>");
-        vim.keymap.set("n", "<F3>", ":lua require'dap'.step_out()<CR>");
-        vim.keymap.set("n", "<F5>", ":lua require'dap'.continue()<CR>");
-        vim.keymap.set("n", "<leader>b", ":lua require'dap'.toggle_breakpoint()<CR>");
-        vim.keymap.set("n", "<leader>B", ":lua require'dap'.set_breakpoint(vim.fn.input('Condition: '))<CR>");
+        vim.keymap.set("n", "<F1>", function() require('dap').step_into() end);
+        vim.keymap.set("n", "<F2>", function() require('dap').step_over() end);
+        vim.keymap.set("n", "<F3>", function() require('dap').step_out() end);
+        vim.keymap.set("n", "<F5>", function() require('dap').continue() end)
+        vim.keymap.set("n", "<leader>b", function() require('dap').toggle_breakpoint() end);
+        vim.keymap.set("n", "<leader>B", function() require('dap').set_breakpoint(vim.fn.input('Condition: ')) end);
 
         local dap = require('dap')
         dap.set_log_level('DEBUG')
@@ -22,7 +22,11 @@ return {
 
         -- Eval var under cursor
         vim.keymap.set("n", "<space>?", function()
-            require("dapui").eval(nil, { enter = true })
+            require("dap.ui.widgets").hover()
+        end)
+
+        vim.keymap.set("n", "<space>dw", function()
+            require("dap-view").add_expr()
         end)
 
 
@@ -44,15 +48,41 @@ return {
                 end,
             }
         }
+        dap.adapters.java = function(callback, config)
 
-        dap.adapters.java = {
-            type = 'executable',
-            command = 'java',
-            args = {
-                '-jar',
-                '/home/irakli/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar'
-            },
-        }
+            -- Check if jdtls is running
+            local clients = vim.lsp.get_clients({ name = 'jdtls', bufnr = 0 })
+            if #clients == 0 then
+                return
+            end
+
+
+            vim.lsp.buf_request(0, 'workspace/executeCommand', {
+                command = 'vscode.java.startDebugSession',
+                arguments = {}
+            }, function(err, result)
+
+                if err then
+                    return
+                end
+
+                if type(result) == 'number' then
+                    callback({
+                        type = 'server',
+                        host = '127.0.0.1',
+                        port = result,
+                    })
+                elseif type(result) == 'table' then
+                    callback({
+                        type = 'server',
+                        host = result.host or '127.0.0.1',
+                        port = result.port,
+                    })
+                else
+                    print("=== Unexpected result type:", type(result), vim.inspect(result), "===")
+                end
+            end)
+        end
 
         dap.configurations.java = {
             {
@@ -61,33 +91,8 @@ return {
                 name = 'Attach to Jetty',
                 hostName = '127.0.0.1',
                 port = 5005,
-            },
+            }
         }
-
-        -- dap.adapters.java = {
-        --     type = 'executable',
-        --     command = 'java',
-        --     args = { '-jar', '/home/irakli/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar' },
-        -- }
-
-        -- dap.adapters.java = {
-        --     type = 'server',
-        --     host = '127.0.0.1',
-        --     port = 5005,
-        --     initialize = function()
-        --         print("Connecting to 127.0.0.1:5005")
-        --     end,
-        -- }
-        --
-        -- dap.configurations.java = {
-        --     {
-        --         type = 'java',
-        --         request = 'attach',
-        --         name = 'Debug (Attach) - Remote Jetty',
-        --         hostName = '127.0.0.1',
-        --         port = 5005,
-        --     },
-        -- }
 
         dap.adapters.delve = {
             type = 'server',
@@ -147,18 +152,19 @@ return {
         }
 
 
-        require('dapui').setup()
+        -- require('dapui').setup()
 
 
-        local dap, dapui = require("dap"), require("dapui")
+        local dapview = require("dap-view");
+
         dap.listeners.after.event_initialized["dapui_config"] = function()
-            dapui.open()
+            dapview.open()
         end
         dap.listeners.after.event_terminated["dapui_config"] = function()
-            dapui.close()
+            dapview.close()
         end
         dap.listeners.after.event_exited["dapui_config"] = function()
-            dapui.close()
+            dapview.close()
         end
     end,
 }

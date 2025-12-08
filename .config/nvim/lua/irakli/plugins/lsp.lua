@@ -88,7 +88,7 @@ return {
                     },
                 },
             },
-    clangd = {
+            clangd = {
                 cmd = {
                     'clangd',
                     '--offset-encoding=utf-16',
@@ -173,7 +173,7 @@ return {
         require('mason-lspconfig').setup {
             ensure_installed = {},
             automatic_enable = {
-                exclude = {},
+                exclude = { 'jdtls' },  -- Exclude jdtls from automatic setup
             },
             handlers = {
                 function(server_name)
@@ -181,11 +181,10 @@ return {
                     server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
                     require('lspconfig')[server_name].setup(server)
                 end,
-                -- jdtls = function()
-                -- local java = require('irakli.java')
-                -- java.Init();
-                -- return true
-                -- end,
+                jdtls = function()
+                    -- Skip mason-lspconfig setup, we handle it ourselves
+                    return true
+                end,
                 ts_ls = function()
                     return true
                 end

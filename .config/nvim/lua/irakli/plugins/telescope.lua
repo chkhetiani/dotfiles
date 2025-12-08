@@ -30,6 +30,7 @@ return {
 
         vim.keymap.set('n', '<leader>to', builtin.buffers, {})
         vim.keymap.set('n', '<leader>td', builtin.diagnostics, {})
+        vim.keymap.set('n', '<leader>te', function() builtin.diagnostics({severity = "ERROR"}) end, {})
         vim.keymap.set('n', '<leader>tr', builtin.lsp_references, {})
         vim.keymap.set('n', '<leader>tb', builtin.builtin, {})
         vim.keymap.set('n', '<leader>tj', builtin.git_branches, {})
