@@ -18,6 +18,26 @@ return {
         local dap = require('dap')
         dap.set_log_level('DEBUG')
 
+        -- Define the highlight groups with colors
+        vim.api.nvim_set_hl(0, 'DapBreakpoint', { fg = '#e51400' })  -- red
+        vim.api.nvim_set_hl(0, 'DapBreakpointCondition', { fg = '#f5c242' }) -- yellow/orange
+        vim.api.nvim_set_hl(0, 'DapBreakpointRejected', { fg = '#808080' }) -- gray
+        vim.api.nvim_set_hl(0, 'DapStopped', { fg = '#98c379' })     -- green
+        vim.api.nvim_set_hl(0, 'DapLogPoint', { fg = '#61afef' })    -- blue
+
+
+        local dap_signs = {
+            DapBreakpoint = { text = "⬤", texthl = "DapBreakpoint" },
+            DapBreakpointCondition = { text = "⬣", texthl = "DapBreakpointCondition" },
+            DapBreakpointRejected = { text = "✖", texthl = "DapBreakpointRejected" },
+            DapStopped = { text = "▶", texthl = "DapStopped" },
+            DapLogPoint = { text = "◉", texthl = "DapLogPoint" },
+        }
+
+        for sign_name, sign_config in pairs(dap_signs) do
+            vim.fn.sign_define(sign_name, sign_config)
+        end
+
         vim.keymap.set("n", "<space>gb", dap.run_to_cursor)
 
         -- Eval var under cursor
@@ -29,8 +49,6 @@ return {
             require("dap-view").add_expr()
         end)
 
-
-        -- require('dap-go').setup()
 
         dap.adapters.coreclr = {
             type = 'executable',
@@ -49,7 +67,6 @@ return {
             }
         }
         dap.adapters.java = function(callback, config)
-
             -- Check if jdtls is running
             local clients = vim.lsp.get_clients({ name = 'jdtls', bufnr = 0 })
             if #clients == 0 then
@@ -61,7 +78,6 @@ return {
                 command = 'vscode.java.startDebugSession',
                 arguments = {}
             }, function(err, result)
-
                 if err then
                     return
                 end
@@ -151,8 +167,6 @@ return {
             end,
         }
 
-
-        -- require('dapui').setup()
 
 
         local dapview = require("dap-view");

@@ -159,7 +159,7 @@ return {
 
         vim.api.nvim_create_autocmd("FileType", {
             pattern = "go",
-            callback = function(event)
+            callback = function(_)
                 local bufopts = { noremap = true, silent = true }
                 vim.keymap.set('n', '<leader>gi', function()
                     vim.lsp.buf.code_action({
