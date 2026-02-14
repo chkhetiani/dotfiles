@@ -1,3 +1,6 @@
+ZSH_DISABLE_COMPFIX=true
+zstyle ':omz:update' frequency 30
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -73,6 +76,8 @@ plugins=(git
 	sudo
 	zsh-autosuggestions)
 
+
+
 export ZSH="$HOME/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
 # User configuration
@@ -102,11 +107,17 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
 fpath+=($HOME/.zsh/pure)
-autoload -U promptinit; promptinit
-autoload -U prompt pure
+# autoload -U promptinit; promptinit
+# autoload -U prompt pure
+#
+# autoload -Uz async
+# prompt_pure_setup
 
 autoload -Uz async
-prompt_pure_setup
+async
+
+autoload -Uz promptinit
+promptinit
 
 prompt pure
 
@@ -160,13 +171,18 @@ function mrun() {
     cdc && mvn jetty:run -f games/pom.xml
 }
 
+function mrun2() {
+    cdc && mvn jetty:run -f game/pom.xml
+}
+
+
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 export PATH="/home/irakli/bin:$PATH"
 export PATH="$PATH:/usr/local/go/bin"
 export PATH="$PATH:/home/irakli/go/bin"
 
-precmd() { print "" }
+# precmd() { print "" }
 
 alias config='/usr/bin/git --git-dir=/home/irakli/.cfg/ --work-tree=/home/irakli'
 alias config='/usr/bin/git --git-dir=/home/irakli/.cfg/ --work-tree=/home/irakli'
@@ -205,6 +221,7 @@ nvm() {
   command nvm "$@"
 }
 
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 # pnpm
 export PNPM_HOME="/home/irakli/.local/share/pnpm"
@@ -212,4 +229,3 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-# pnpm end

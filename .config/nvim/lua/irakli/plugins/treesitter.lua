@@ -65,9 +65,11 @@ return {
                     enable = true,
                     swap_next = {
                         ["<leader>gc"] = "@parameter.inner",
+                        -- ["<leader>sn"] = "@assignment.outer",
                     },
                     swap_previous = {
                         ["<leader>gC"] = "@parameter.inner",
+                        -- ["<leader>sp"] = "@assignment.outer",
                     },
                 },
             },
