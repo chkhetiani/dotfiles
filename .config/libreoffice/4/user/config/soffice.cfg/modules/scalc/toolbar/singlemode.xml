@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE toolbar:toolbar PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "toolbar.dtd">
+<toolbar:toolbar xmlns:toolbar="http://openoffice.org/2001/toolbar" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <toolbar:toolbaritem xlink:href=".uno:AddDirect" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:OpenFromCalc"/>
+ <toolbar:toolbaritem xlink:href=".uno:Save"/>
+ <toolbar:toolbaritem xlink:href=".uno:ExportDirectToPDF" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:Print"/>
+ <toolbar:toolbaritem xlink:href=".uno:PrintPreview" toolbar:visible="false"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:Undo"/>
+ <toolbar:toolbaritem xlink:href=".uno:Redo"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:SearchDialog"/>
+ <toolbar:toolbaritem xlink:href=".uno:FormatPaintbrush"/>
+ <toolbar:toolbaritem xlink:href=".uno:SpellDialog" toolbar:visible="false"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:NumberFormatStandard" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:NumberFormatCurrencySimple"/>
+ <toolbar:toolbaritem xlink:href=".uno:NumberFormatPercent"/>
+ <toolbar:toolbaritem xlink:href=".uno:NumberFormatDecimal"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:NumberFormatIncDecimals"/>
+ <toolbar:toolbaritem xlink:href=".uno:NumberFormatDecDecimals"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:StyleApply" toolbar:visible="false"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:CharFontName"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:FontHeight"/>
+ <toolbar:toolbaritem xlink:href=".uno:Grow" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:Shrink" toolbar:visible="false"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:Bold"/>
+ <toolbar:toolbaritem xlink:href=".uno:Italic"/>
+ <toolbar:toolbaritem xlink:href=".uno:Underline"/>
+ <toolbar:toolbaritem xlink:href=".uno:Color"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:BackgroundColor"/>
+ <toolbar:toolbaritem xlink:href=".uno:SetBorderStyle"/>
+ <toolbar:toolbaritem xlink:href=".uno:LineStyle" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:FrameLineColor" toolbar:visible="false"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:AlignLeft"/>
+ <toolbar:toolbaritem xlink:href=".uno:AlignHorizontalCenter"/>
+ <toolbar:toolbaritem xlink:href=".uno:AlignRight"/>
+ <toolbar:toolbaritem xlink:href=".uno:AlignBlock" toolbar:visible="false"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:AlignTop"/>
+ <toolbar:toolbaritem xlink:href=".uno:AlignVCenter"/>
+ <toolbar:toolbaritem xlink:href=".uno:AlignBottom"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:WrapText"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:ToggleMergeCells"/>
+ <toolbar:toolbaritem xlink:href=".uno:MergeCells"/>
+ <toolbar:toolbaritem xlink:href=".uno:SplitCell"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:IncrementIndent" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:DecrementIndent" toolbar:visible="false"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:InsertGraphic" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:InsertObjectChart"/>
+ <toolbar:toolbaritem xlink:href=".uno:DataDataPilotRun"/>
+ <toolbar:toolbaritem xlink:href=".uno:InsertAnnotation" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:HyperlinkDialog" toolbar:visible="false"/>
+ <toolbar:toolbarseparator/>
+ <toolbar:toolbaritem xlink:href=".uno:DataSort"/>
+ <toolbar:toolbaritem xlink:href=".uno:SortAscending" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:SortDescending" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:DataFilterAutoFilter"/>
+ <toolbar:toolbaritem xlink:href=".uno:DataFilterStandardFilter" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:DataFilterSpecialFilter" toolbar:visible="false"/>
+ <toolbar:toolbaritem xlink:href=".uno:ConditionalFormatMenu"/>
+ <toolbar:toolbaritem xlink:href=".uno:AutoFormat" toolbar:text="Auto~Format Styles..."/>
+</toolbar:toolbar>

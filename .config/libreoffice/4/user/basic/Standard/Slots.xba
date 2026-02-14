@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="Slots" script:language="StarBasic">Function WAVG(range1 As Object, range2 As Object) As Double
+    Dim oFunction As Object
+    Dim sumProduct As Double
+    Dim sumRange2 As Double
+    
+    oFunction = createUnoService(&quot;com.sun.star.sheet.FunctionAccess&quot;)
+    
+    sumProduct = oFunction.callFunction(&quot;SUMPRODUCT&quot;, Array(range1, range2))
+    sumRange2 = oFunction.callFunction(&quot;SUM&quot;, Array(range2))
+    
+    &apos; Avoid division by zero
+    If sumRange2 &lt;&gt; 0 Then
+        WAVG = sumProduct / sumRange2
+    Else
+        WAVG = 0
+    End If
+End Function
+
+Function HIT(numberCell As Object, range As Object) As Double
+    Dim oFunction As Object
+    Dim numberValue As Double
+    Dim sumRange As Double
+    
+    numberValue = numberCell.Value
+    oFunction = createUnoService(&quot;com.sun.star.sheet.FunctionAccess&quot;)
+    
+    sumRange = oFunction.callFunction(&quot;SUM&quot;, Array(range))
+
+    If sumRange &lt;&gt; 0 Then
+        HIT = numberValue / sumRange
+    Else
+        HIT = 0
+    End If
+End Function
+
+
+Sub ReplaceExistingBordersWith1_75pt()
+    Dim oDoc As Object
+    Dim oSheet As Object
+    Dim oRange As Object
+    Dim oCell As Object
+    Dim oBorder As New com.sun.star.table.BorderLine2
+    Dim i As Long, j As Long
+    Dim hasBorder As Boolean
+    
+    &apos; Set new border properties (1.75 pt = 175 in 1/100th of a point)
+    oBorder.LineWidth = 62
+    oBorder.LineStyle = com.sun.star.table.BorderLineStyle.SOLID
+    
+    &apos; Access the document and active sheet
+    oDoc = ThisComponent
+    oSheet = oDoc.CurrentController.ActiveSheet
+    
+    &apos; Define the range to check (adjust if needed, e.g., &quot;A1:D100&quot; for a smaller range)
+    oRange = oSheet.getCellRangeByName(&quot;A1:AMJ100&quot;) &apos; Entire sheet
+    
+    &apos; Loop through each cell in the range
+    For i = 0 To oRange.Rows.Count - 1
+        For j = 0 To oRange.Columns.Count - 1
+            oCell = oRange.getCellByPosition(j, i)
+            
+            &apos; Check if the cell has any border (width &gt; 0)
+            hasBorder = (oCell.TopBorder.LineWidth &gt; 40 Or _
+                         oCell.BottomBorder.LineWidth &gt; 40 Or _
+                         oCell.LeftBorder.LineWidth &gt; 40 Or _
+                         oCell.RightBorder.LineWidth &gt; 40)
+            
+            &apos; If the cell has borders, apply the new 1.75 pt border
+            If hasBorder Then
+                If oCell.TopBorder.LineWidth &gt; 40 Then oCell.TopBorder = oBorder
+                If oCell.BottomBorder.LineWidth &gt; 40 Then oCell.BottomBorder = oBorder
+                If oCell.LeftBorder.LineWidth &gt; 40 Then oCell.LeftBorder = oBorder
+                If oCell.RightBorder.LineWidth &gt; 40 Then oCell.RightBorder = oBorder
+            End If
+        Next j
+    Next i
+End Sub
+
+
+
+
+
+
+Sub CopySelectedRangeAddress
+    Dim oSel As Object
+    Dim oAddr As Object
+    Dim sAddress As String
+
+    oSel = ThisComponent.CurrentSelection
+    If Not oSel.supportsService(&quot;com.sun.star.sheet.SheetCellRange&quot;) Then
+        MsgBox &quot;Please select a valid range of cells.&quot;, 48
+        Exit Sub
+    End If
+
+    oAddr = oSel.RangeAddress
+    sAddress = GetCellName(oAddr.StartColumn, oAddr.StartRow) &amp; &quot;:&quot; &amp; GetCellName(oAddr.EndColumn, oAddr.EndRow)
+
+    &apos; Use xclip (Linux only; install it with: sudo dnf install xclip)
+    Shell(&quot;bash&quot;, 0, &quot;-c &apos;echo -n &quot;&quot;&quot; &amp; sAddress &amp; &quot;&quot;&quot; | xclip -selection clipboard&apos;&quot;, True)
+End Sub
+
+Function GetCellName(col As Integer, row As Integer) As String
+    Dim colName As String
+    colName = &quot;&quot;
+    Do
+        colName = Chr(65 + (col Mod 26)) &amp; colName
+        col = (col \ 26) - 1
+    Loop While col &gt;= 0
+    GetCellName = colName &amp; (row + 1)
+End Function
+
+
+
+
+
+
+
+
+Sub OpenDocumentFolder
+    Dim oDoc As Object
+    Dim sURL As String
+    Dim sSystemPath As String
+    Dim nLastSlash As Integer
+
+    oDoc = ThisComponent
+
+    If oDoc.hasLocation Then
+        sURL = oDoc.URL
+        sSystemPath = ConvertFromURL(sURL)
+
+        &apos; Get folder path
+        nLastSlash = MyInStrRev(sSystemPath, &quot;/&quot;)
+        sSystemPath = Left(sSystemPath, nLastSlash - 1)
+
+        &apos; Open with default file manager
+        Shell(&quot;xdg-open &quot; &amp; Chr(34) &amp; sSystemPath &amp; Chr(34), 0)
+    Else
+        MsgBox &quot;Document not saved yet. Save it first.&quot;, 64, &quot;Info&quot;
+    End If
+End Sub
+
+&apos; Simulates InStrRev for LibreOffice Basic
+Function MyInStrRev(sInput As String, sFind As String) As Integer
+    Dim i As Integer
+    For i = Len(sInput) To 1 Step -1
+        If Mid(sInput, i, Len(sFind)) = sFind Then
+            MyInStrRev = i
+            Exit Function
+        End If
+    Next i
+    MyInStrRev = 0
+End Function
+
+Sub ReplaceAnchorArrayWithSource
+    Dim oDoc As Object, oSheet As Object
+    Dim oCursor As Object, oCell As Object
+    Dim sFormula As String, sRef As String, sSourceFormula As String
+    Dim iSheet As Long, r As Long, c As Long
+
+    oDoc = ThisComponent
+    count = 0
+    Dim str As String   &apos; declare a variable of type String
+str = &quot;Hello World\n&quot; 
+
+    For iSheet = 0 To oDoc.Sheets.Count - 1
+        oSheet = oDoc.Sheets(iSheet)
+
+        oCursor = oSheet.createCursor
+        oCursor.gotoStartOfUsedArea(False)
+        oCursor.gotoEndOfUsedArea(True)
+
+        For r = oCursor.RangeAddress.StartRow To oCursor.RangeAddress.EndRow
+            For c = oCursor.RangeAddress.StartColumn To oCursor.RangeAddress.EndColumn
+                oCell = oSheet.getCellByPosition(c, r)
+
+                If oCell.Type = com.sun.star.table.CellContentType.FORMULA Then
+                    sFormula = oCell.Formula
+
+                    &apos; Look for =_xlfn.ANCHORARRAY(Ref)
+                    If LCase(Left(sFormula, 20)) Like &quot;{=_xlfn.anchorarray(*&quot; Then
+                        &apos; Pull out the argument inside ()
+                        sRef = Mid(sFormula, InStr(sFormula, &quot;(&quot;) + 1, _
+                                   InStr(sFormula, &quot;)&quot;) - InStr(sFormula, &quot;(&quot;) - 1)
+                        Dim parts() As String
+parts = Split(sRef, &quot;.&quot;)
+If UBound(parts) = 1 Then
+    sRef = parts(1)
+End If
+                        sRef = Trim(sRef)
+
+str = str + sRef + &quot;\n&quot;
+                        &apos; Read the formula from that anchor cell
+                        sSourceFormula = oSheet.getCellRangeByName(sRef).Formula
+						count = count + 1
+                        &apos; Put that formula here
+                        oCell.Formula = sSourceFormula
+                    End If
+                End If
+            Next c
+        Next r
+    Next iSheet
+
+    MsgBox &quot;Finished replacing _xlfn.ANCHORARRAY formulas.&quot;+count+str
+End Sub
+
+Sub ReplaceAnchorArraySafely
+    Dim oDoc As Object, oSheet As Object
+    Dim oCursor As Object, oCell As Object
+    Dim sFormula As String, sRef As String, sSourceFormula As String
+    Dim iSheet As Long, r As Long, c As Long
+    
+    &apos; Create dictionary substitute
+    Dim anchorKeys() As String
+    Dim anchorTargets() As Object
+    Dim anchorCount As Long
+    anchorCount = 0
+    
+    oDoc = ThisComponent
+
+    &apos; First pass: collect all target cells for each anchor
+    For iSheet = 0 To oDoc.Sheets.Count - 1
+        oSheet = oDoc.Sheets(iSheet)
+        oCursor = oSheet.createCursor
+        oCursor.gotoStartOfUsedArea(False)
+        oCursor.gotoEndOfUsedArea(True)
+
+        For r = oCursor.RangeAddress.StartRow To oCursor.RangeAddress.EndRow
+            For c = oCursor.RangeAddress.StartColumn To oCursor.RangeAddress.EndColumn
+                oCell = oSheet.getCellByPosition(c, r)
+                If oCell.Type = com.sun.star.table.CellContentType.FORMULA Then
+                    sFormula = oCell.Formula
+                    If LCase(Left(sFormula, 20)) Like &quot;{=_xlfn.anchorarray(*&quot; Or LCase(Left(sFormula, 20)) Like &quot;=_xlfn.anchorarray(*&quot; Then
+                        &apos; Extract anchor reference
+                        sRef = Mid(sFormula, InStr(sFormula, &quot;(&quot;) + 1, InStr(sFormula, &quot;)&quot;) - InStr(sFormula, &quot;(&quot;) - 1)
+                        sRef = Trim(sRef)
+                        
+                        &apos; Convert $Sheet.Cell -&gt; &apos;Sheet&apos;.Cell if needed
+                        Dim parts() As String
+                        parts = Split(sRef, &quot;.&quot;)
+                        If UBound(parts) = 1 Then
+                            sRef = &quot;&apos;&quot; &amp; Replace(parts(0), &quot;$&quot;, &quot;&quot;) &amp; &quot;&apos;.&quot; &amp; parts(1)
+                        End If
+                        
+                        &apos; Check if anchor already exists
+                        Dim idx As Long, found As Boolean
+                        found = False
+                        For idx = 0 To anchorCount - 1
+                            If anchorKeys(idx) = sRef Then
+                                found = True
+                                Exit For
+                            End If
+                        Next
+                        If Not found Then
+                            anchorCount = anchorCount + 1
+                            ReDim Preserve anchorKeys(anchorCount - 1)
+                            ReDim Preserve anchorTargets(anchorCount - 1)
+                            anchorKeys(anchorCount - 1) = sRef
+                            anchorTargets(anchorCount - 1) = CreateObject(&quot;com.sun.star.container.ArrayList&quot;)
+                        End If
+                        anchorTargets(idx).Add oCell
+                    End If
+                End If
+            Next c
+        Next r
+    Next iSheet
+
+    &apos; Second pass: replace formulas by reading from anchor
+    Dim i As Long
+    For i = 0 To anchorCount - 1
+        On Error Resume Next
+        sSourceFormula = oDoc.Sheets(0).getCellRangeByName(anchorKeys(i)).Formula
+        If Err.Number &lt;&gt; 0 Then
+            MsgBox &quot;Error reading anchor: &quot; &amp; anchorKeys(i) &amp; &quot;  &quot; &amp; Err.Description
+            Err.Clear
+            GoTo NextAnchor
+        End If
+        On Error GoTo 0
+        
+        Dim j As Long
+        For j = 0 To anchorTargets(i).Count - 1
+            anchorTargets(i).Get(j).Formula = sSourceFormula
+        Next
+NextAnchor:
+    Next
+
+    MsgBox &quot;Finished replacing _xlfn.ANCHORARRAY formulas.&quot;
+End Sub
+
+
+
+Sub DebugCell
+    Dim oSheet As Object
+    Dim oCell As Object
+    
+    oSheet = ThisComponent.Sheets(1)  &apos; first sheet
+    oCell = oSheet.getCellRangeByName(&quot;BJ60&quot;)
+    
+    MsgBox &quot;Formula: &quot; &amp; oCell.Formula &amp; Chr(10) &amp; _
+           &quot;Value: &quot; &amp; oCell.Value
+End Sub
+
+
+</script:module>
