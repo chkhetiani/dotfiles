@@ -4,6 +4,7 @@ size = 9
 
 [font.normal]
 family = "SauceCodePro Nerd Font"
+# family = "Super Cartoon"
 
 [general]
 import = ["/home/irakli/.config/alacritty/tokyo/tokyo.toml"]

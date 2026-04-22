@@ -168,13 +168,26 @@ function limit {
 
 # functions
 function mrun() {
-    cdc && mvn jetty:run -f games/pom.xml
+    cdc
+
+    FILE="games/pom.xml"
+
+    if [[ -f "$FILE" ]]; then
+        mvn jetty:run -f games/pom.xml
+    else
+        mvn jetty:run -f game/pom.xml
+    fi
 }
 
-function mrun2() {
-    cdc && mvn jetty:run -f game/pom.xml
+killp() {
+    local pid=$(lsof -t -i:"$1")
+    if [ -n "$pid" ]; then
+        echo "Killing process $pid on port $1..."
+        kill -9 $pid
+    else
+        echo "No process found on port $1"
+    fi
 }
-
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"

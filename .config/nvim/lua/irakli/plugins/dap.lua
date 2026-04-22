@@ -4,7 +4,7 @@ return {
 		-- 'rcarriga/nvim-dap-ui',
 		"mfussenegger/nvim-jdtls",
 		"theHamsta/nvim-dap-virtual-text",
-		"nvim-neotest/nvim-nio"
+		"nvim-neotest/nvim-nio",
 		-- 'leoluz/nvim-dap-go',
 	},
 	config = function()
@@ -74,6 +74,13 @@ return {
 				program = function()
 					return vim.fn.input("Path to dll", vim.fn.getcwd() .. "/bin/Debug/", "file")
 				end,
+				env = {
+					ASPNETCORE_ENVIRONMENT = "Development",
+					DOTNET_ENVIRONMENT = "Development",
+					ASPNETCORE_URLS = "https://localhost:7000;http://localhost:5000", -- adjust ports to match yours
+				},
+				args = {},
+				cwd = vim.fn.getcwd(),
 			},
 		}
 		dap.adapters.java = function(callback, config)
