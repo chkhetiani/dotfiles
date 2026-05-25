@@ -38,3 +38,5 @@ vim.keymap.set("n", "<leader>gcc", function()
   vim.fn.delete(vim.fn.expand("~/.cache/jdtls"), "rf")
   vim.cmd("LspRestart")
 end, { desc = "Clear JDTLS cache and restart LSP" })
+
+vim.keymap.set('n', '<leader>c', 'yy:let @r = eval(trim(@"))<CR>o<C-r>r<Esc>', { remap = false })

@@ -7,7 +7,7 @@ echo "Version: $version"
 
 if [[ -n "$name" && -n "$version" ]]; then
     base="/home/irakli/work/math/${name}_${version}"
-    mkdir -p "$base/origin" "$base/sims"
+    mkdir -p "$base/origin" "$base/sims" "$base/sims/high" "$base/sims/low" "$base/sims/portfolio"
     thunar "$base"
 else
     echo "❌ Both name and version must be provided (non-empty)."
