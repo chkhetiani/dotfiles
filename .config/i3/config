@@ -139,6 +139,7 @@ bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOU
 bindsym XF86AudioPlay exec --no-startup-id  playerctl play-pause && $refresh_i3status
 bindsym XF86AudioNext exec --no-startup-id  playerctl next && $refresh_i3status
 bindsym XF86AudioPrev exec --no-startup-id  playerctl previous && $refresh_i3status
+bindsym XF86Calculator exec --no-startup-id speedcrunch
 
 # default_border none
 # new_window pixel 2
@@ -151,6 +152,8 @@ for_window [class="Xfce4-terminal" instance="xfce4-terminal"] floating enable
 for_window [class="Localsend" instance="localsend"] floating enable
 # for_window [class="AlacrittyThunar" instance="AlacrittyThunar"] floating enable
 for_window [class="AlacrittyThunar"] floating enable, resize set 713 402, move position 585 628
+for_window [class="[Ss]peed[Cc]runch"] floating enable, resize set 582 309, move absolute position 918 1063
+
 
 
 

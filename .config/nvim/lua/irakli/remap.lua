@@ -40,3 +40,11 @@ vim.keymap.set("n", "<leader>gcc", function()
 end, { desc = "Clear JDTLS cache and restart LSP" })
 
 vim.keymap.set('n', '<leader>c', 'yy:let @r = eval(trim(@"))<CR>o<C-r>r<Esc>', { remap = false })
+
+
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '<C-h>', [[<C-\><C-n><C-w>h]], { desc = 'Move left' })
+vim.keymap.set('t', '<C-j>', [[<C-\><C-n><C-w>j]], { desc = 'Move down' })
+vim.keymap.set('t', '<C-k>', [[<C-\><C-n><C-w>k]], { desc = 'Move up' })
+vim.keymap.set('t', '<C-l>', [[<C-\><C-n><C-w>l]], { desc = 'Move right' })
+vim.keymap.set('n', '<C-p>', ":term<CR>", { desc = 'Move right' })

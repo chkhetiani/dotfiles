@@ -9,7 +9,7 @@ return {
     },
     config = function()
         -- vim.lsp.set_log_level("off")
-        vim.lsp.set_log_level("debug")
+        -- vim.lsp.set_log_level("debug")
 
         vim.diagnostic.config({ virtual_text = true })
 

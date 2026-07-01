@@ -1,7 +1,12 @@
 #!/bin/bash
+
 selected=$(
-    find /home/irakli -not -path '*/.*' -type d -printf '%P\n' |
-    rofi -dmenu -sorting-method fzf -sort -i -p "dir"
+    fd --type d --hidden --exclude '.*' . /home/irakli \
+    | sed 's|^/home/irakli/||' \
+    | rofi -dmenu -i -p "dir" \
+        -matching fuzzy \
+        -sort \
+        -sorting-method fzf
 )
 rofi_exit=$?
 
