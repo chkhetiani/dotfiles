@@ -235,6 +235,8 @@ nvm() {
 }
 
 export PATH="$HOME/.npm-global/bin:$PATH"
+export PATH="$HOME/opt/emsdk/upstream/emscripten:$PATH"
+
 
 # pnpm
 export PNPM_HOME="/home/irakli/.local/share/pnpm"
