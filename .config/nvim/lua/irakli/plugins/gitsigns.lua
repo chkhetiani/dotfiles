@@ -37,10 +37,13 @@ return {
             relative = 'cursor',
             row = 0,
             col = 1
-        }
+        },
+        on_attach                    = function(bufnr)
+            local gs = require("gitsigns")
+            vim.keymap.set('n', '<leader>gv', gs.preview_hunk_inline, { buffer = bufnr, desc = "Show git diff inline", silent = true })
+            vim.keymap.set("n", "]h", function() gs.nav_hunk('next') end, { buffer = bufnr, desc = "Next git hunk" })
+            vim.keymap.set("n", "[h", function() gs.nav_hunk('prev') end, { buffer = bufnr, desc = "Previous git hunk" })
+        end,
     },
-    setup = function()
-        vim.keymap.set('n', '<leader>gd', '<cmd>Gitsigns preview_hunk_inline<cr>', { desc= "Show git diff inline", noremap = true, silent = true })
-    end
 }
 

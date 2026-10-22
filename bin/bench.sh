@@ -6,15 +6,27 @@
 #   bench.sh castle-climb castle_climb_1.5
 #
 # Runs 16M spins @ 8 threads and 48M spins @ 24 threads, then reports the
-# hottest methods and allocation sites from a JFR recording of the 48M run.
+# hottest methods and allocation sites from a separate JFR-profiled 48M pass
+# (profiling runs separately so it doesn't inflate the reported timings).
 #
 #   -n / --no-profile   skip JFR
 #   -k / --keep         leave the server running when done
+#
+# Env: HEAP (default 512m), YOUNG (default 24m), RTP, BET_TYPE, PORT, PROTO_ROOT.
 set -uo pipefail
 
 PROTO_ROOT=${PROTO_ROOT:-/home/irakli/work/prototypes}
 PORT=${PORT:-8080}
-HEAP=${HEAP:-12g}
+# The simulation's live set is ~10 MB; a 12g heap just commits 12g and lets G1's
+# young gen balloon to ~940 MB (~1.5 GB RSS, 300+ MB GC metadata) for no benefit.
+# 512m is ample and ~3x lighter.
+HEAP=${HEAP:-512m}
+# Games that opt in to scratch reuse (Game.reuseSimScratch) allocate ~nothing per
+# spin; the rest allocate ~2 KB/spin, which at 24 threads saturates memory
+# bandwidth. A young gen that fits in L3 (30 MB on the i9-12900K) keeps those
+# allocations in cache: 48M/24thr on the safe path 9.5s -> 5.7s, reuse path
+# unchanged. Beyond L3 (e.g. 48m) the gain disappears; retune on other CPUs.
+YOUNG=${YOUNG:-24m}
 RTP=${RTP:-96}
 BET_TYPE=${BET_TYPE:-Normal}
 WORK=$(mktemp -d /tmp/bench.XXXXXX)
@@ -26,7 +38,7 @@ for a in "$@"; do
   case "$a" in
     -n|--no-profile) PROFILE=0 ;;
     -k|--keep)       KEEP=1 ;;
-    -h|--help)       sed -n '2,12p' "$0" | sed 's/^# \?//'; exit 0 ;;
+    -h|--help)       sed -n '2,15p' "$0" | sed 's/^# \?//'; exit 0 ;;
     *)               ARGS+=("$a") ;;
   esac
 done
@@ -87,8 +99,8 @@ JFR=$WORK/run.jfr
 JFR_OPTS=""
 (( PROFILE )) && JFR_OPTS="-XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints"
 
-info "starting jetty ${c_dim}(heap $HEAP)${c_0}"
-MAVEN_OPTS="-Xmx$HEAP -Xms$HEAP $JFR_OPTS" \
+info "starting jetty ${c_dim}(heap $HEAP, young $YOUNG)${c_0}"
+MAVEN_OPTS="-Xmx$HEAP -Xms$HEAP -Xmn$YOUNG $JFR_OPTS" \
   nohup ./mvnw -o -pl game -am jetty:run > "$WORK/jetty.log" 2>&1 &
 SERVER_PID=$!
 
@@ -171,23 +183,25 @@ r=$(awk -v c=16000000 -v t="$t" 'BEGIN{print c/t}')
 printf '  %-22s %8.2fs   %s%12s%s spins/s\n' "16M spins / 8 thr" "$t" "$c_g" "$(fmt_rate "$r")" "$c_0"
 
 # ------------------------------------------------------------------ 48M/24 ---
-if (( PROFILE )) && [[ -n $JVM_PID ]]; then
-  jcmd "$JVM_PID" JFR.start name=bench settings=profile filename="$JFR" >/dev/null 2>&1
-fi
-
 t=$(run_sim 48000000 24) || exit 1
 r=$(awk -v c=48000000 -v t="$t" 'BEGIN{print c/t}')
 printf '  %-22s %8.2fs   %s%12s%s spins/s\n' "48M spins / 24 thr" "$t" "$c_g" "$(fmt_rate "$r")" "$c_0"
-
-if (( PROFILE )) && [[ -n $JVM_PID ]]; then
-  jcmd "$JVM_PID" JFR.dump name=bench filename="$JFR" >/dev/null 2>&1
-  jcmd "$JVM_PID" JFR.stop name=bench >/dev/null 2>&1
-fi
 
 # machine context - a loaded box or a downclocked CPU invalidates the comparison
 mhz=$(awk '/cpu MHz/{s+=$4;n++} END{if(n)printf "%.0f",s/n}' /proc/cpuinfo)
 load=$(awk '{print $1}' /proc/loadavg)
 printf '%s  %s─ %s MHz, load %s%s\n' "$c_dim" "$(printf '─%.0s' {1..24})" "$mhz" "$load" "$c_0"
+
+# --------------------------------------------------------------- profiling ---
+# JFR adds overhead, so profile a separate 48M/24 pass and keep it out of the
+# timed runs above. The hotspot/GC sections below read this recording. The GC
+# count here is for the profiled pass only.
+if (( PROFILE )) && [[ -n $JVM_PID ]]; then
+  jcmd "$JVM_PID" JFR.start name=bench settings=profile filename="$JFR" >/dev/null 2>&1
+  run_sim 48000000 24 >/dev/null 2>&1 || true
+  jcmd "$JVM_PID" JFR.dump name=bench filename="$JFR" >/dev/null 2>&1
+  jcmd "$JVM_PID" JFR.stop name=bench >/dev/null 2>&1
+fi
 
 # ---------------------------------------------------------------- hotpaths ---
 if (( PROFILE )) && [[ -s $JFR ]]; then

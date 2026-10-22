@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Find the project root by walking up from the current directory.
+root=""
+dir="$PWD"
+while [[ "$dir" != "/" ]]; do
+    if [[ -d "$dir/games" ]]; then
+        root="$dir"
+        break
+    fi
+    dir="$(dirname "$dir")"
+done
+
+if [[ -z "$root" ]]; then
+    echo "No games/ directory found in $PWD or any parent." >&2
+    exit 1
+fi
+
+cd "$root"
+query="${1:-}"
+
+games=()
+for game_dir in games/*/; do
+    [[ -f "${game_dir}game.json" ]] || continue
+    games+=("$(basename "$game_dir")")
+done
+
+if ((${#games[@]} == 0)); then
+    echo "No games found under $root/games/" >&2
+    exit 1
+fi
+
+pick() {
+    if command -v fzf >/dev/null 2>&1; then
+        fzf --height=40% --reverse --prompt='game> ' \
+            --query="$query" --select-1 --exit-0 \
+            --preview='cat games/{}/game.json 2>/dev/null' \
+            --preview-window='down,6,border-top'
+    elif command -v gum >/dev/null 2>&1; then
+        gum choose --header='Select a game' "${games[@]}"
+    else
+        select game in "${games[@]}"; do
+            [[ -n "${game:-}" ]] && { echo "$game"; break; }
+        done
+    fi
+}
+
+if ! game="$(printf '%s\n' "${games[@]}" | pick)" || [[ -z "$game" ]]; then
+    echo "No game selected." >&2
+    exit 1
+fi
+
+: "${PORT:=8081}"
+echo "Starting '$game' on http://localhost:$PORT"
+exec env PORT="$PORT" GAME="$game" pnpm --filter @game/app start

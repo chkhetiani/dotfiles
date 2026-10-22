@@ -244,3 +244,19 @@ case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
+
+# bun completions
+[ -s "/home/irakli/.bun/_bun" ] && source "/home/irakli/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+export PATH="/home/irakli/.bend/bin:$PATH"
+
+# opencode
+export PATH=/home/irakli/.opencode/bin:$PATH
+export PATH=/home/irakli/.nimble/bin:$PATH
+
+source <(fzf --zsh)
+
