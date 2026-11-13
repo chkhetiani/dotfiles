@@ -113,16 +113,41 @@ fpath+=($HOME/.zsh/pure)
 # autoload -Uz async
 # prompt_pure_setup
 
-autoload -Uz async
-async
+# ── One-line prompt (works in both Ghostty and Alacritty) ────────────────────
+# Replaces the Pure prompt. Pure redraws PS1 asynchronously (path, then branch,
+# then dirty marker); Ghostty's OSC 133 prompt markers turn each redraw into a
+# fresh line, so the preprompt stacked up. This prompt renders synchronously in
+# precmd, once per prompt, so both terminals show the same single line:
+#   ~/bin master* ❯
+autoload -Uz vcs_info add-zsh-hook
+unsetopt prompt_subst
+PROMPT_EOL_MARK=''
 
-autoload -Uz promptinit
-promptinit
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' unstagedstr '*'
+zstyle ':vcs_info:git:*' stagedstr '+'
+zstyle ':vcs_info:git:*' formats '%F{242}%b%f%F{218}%u%c%f'
 
-prompt pure
+_one_line_precmd() {
+  vcs_info
+  local dir=$PWD
+  [[ $dir == $HOME* ]] && dir="~${dir#$HOME}"
+  local git_info=''
+  [[ -n $vcs_info_msg_0_ ]] && git_info=" ${vcs_info_msg_0_}"
+  PROMPT="%F{blue}${dir}%f${git_info} %F{magenta}❯%f "
+  print -Pn "\e]0;${dir}\a"
+}
+add-zsh-hook precmd _one_line_precmd
 
-prompt_newline='%666v'
-PROMPT=" $PROMPT"
+# Previous Pure setup, kept for reference:
+# autoload -Uz async
+# async
+# autoload -Uz promptinit
+# promptinit
+# prompt pure
+# prompt_newline='%666v'
+# PROMPT=" $PROMPT"
 
 JAVA_HOME=$(readlink -f /user/bin/javac | sed "s:/bin/javac::")
 export JAVA_HOME

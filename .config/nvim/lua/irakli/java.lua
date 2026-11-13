@@ -9,6 +9,26 @@ local function setup_keymaps(bufnr)
     map('v', '<leader>de', '<Esc><Cmd>lua require("jdtls").extract_variable(true)<CR>', 'Extract Variable')
     map('n', '<leader>de', require('jdtls').extract_variable, 'Extract Variable')
     map('v', '<leader>dm', '<Esc><Cmd>lua require("jdtls").extract_method(true)<CR>', 'Extract Method')
+
+    map('n', '<leader>gj', function()
+        vim.opt_local.makeprg = './mvnw -q -B compile'
+        vim.opt_local.errorformat = '[ERROR] %f:[%l\\,%c] %m,%-G%.%#'
+        vim.cmd('silent make!')
+
+        -- Maven repeats every error in its final summary, so drop the duplicates
+        local seen, unique = {}, {}
+        for _, item in ipairs(vim.fn.getqflist()) do
+            local key = item.bufnr .. ':' .. item.lnum .. ':' .. item.col .. ':' .. item.text
+            if not seen[key] then
+                seen[key] = true
+                table.insert(unique, item)
+            end
+        end
+        vim.fn.setqflist(unique, 'r')
+
+        vim.cmd('copen')
+    end, '[M]aven compile')
+
 end
 
 local function setup_dap()
@@ -88,8 +108,22 @@ function M.Init()
                 end
             end
 
-            -- Build cmd manually if jdtls_config.cmd is a function
-            local cmd = type(jdtls_config.cmd) == 'function' and { 'jdtls' } or jdtls_config.cmd
+            -- Build cmd manually (lspconfig's cmd is a function). It MUST carry a
+            -- per-root -data dir: without one, mason's jdtls wrapper derives the
+            -- workspace from basename(cwd), so every project/worktree opened from
+            -- the same cwd shares one Eclipse workspace (lock fights, re-indexing,
+            -- memory blowup). Also cap the heap: wrapper sets -Xms1G and no -Xmx,
+            -- so the JVM may grow to 1/4 of RAM (~8GB here).
+            local data_dir = vim.fn.stdpath('cache') .. '/jdtls/workspace/' ..
+                root_dir:gsub('^/', ''):gsub('/', '%%')
+            local cmd = {
+                'jdtls',
+                '-data', data_dir,
+                -- overrides the wrapper's hardcoded -Xms1G (last -Xms wins)
+                '--jvm-arg=-Xms256m',
+                '--jvm-arg=-Xmx2G',
+                '--jvm-arg=-XX:+UseStringDeduplication',
+            }
 
             local dap_setup_done = false
             local config = vim.tbl_deep_extend('force', base_config, {
@@ -108,6 +142,10 @@ function M.Init()
                 init_options = {
                     bundles = { java_debug_path },
                 },
+                on_exit = function()
+                    -- allow a restart for this root if the server stops/crashes
+                    jdtls_setup[root_dir] = nil
+                end,
                 on_attach = function(_, bufnr)
                     setup_keymaps(bufnr)
 
@@ -128,6 +166,24 @@ function M.Init()
             })
 
             require("jdtls").start_or_attach(config)
+        end,
+    })
+
+    -- When switching worktrees (cwd moves to a different checkout), stop jdtls
+    -- servers whose project is unrelated to the new cwd instead of leaving a
+    -- multi-GB JVM behind for every worktree visited.
+    vim.api.nvim_create_autocmd("DirChanged", {
+        callback = function()
+            local cwd = vim.fn.getcwd()
+            local function within(child, parent)
+                return child == parent or vim.startswith(child, parent .. '/')
+            end
+            for _, client in ipairs(vim.lsp.get_clients({ name = 'jdtls' })) do
+                local root = client.config.root_dir
+                if root and not within(root, cwd) and not within(cwd, root) then
+                    client:stop()
+                end
+            end
         end,
     })
     return true
