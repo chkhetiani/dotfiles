@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# ram-watch: red dunst alert when RAM usage >= THRESHOLD%.
+# Click the alert -> rofi menu of the top 5 memory hogs -> pick one to kill.
+#
+#   ram-watch          run the watcher (started from i3 config)
+#   ram-watch pick     open the kill menu right now (handy to bind to a key)
+
+THRESHOLD=${RAM_WATCH_THRESHOLD:-90}   # alert at/above this %
+REARM=${RAM_WATCH_REARM:-85}           # must drop below this before alerting again
+INTERVAL=${RAM_WATCH_INTERVAL:-5}      # seconds between checks
+NID=91919                              # fixed dunst id so alerts replace each other
+
+notify() { dunstify -a ram-watch "$@"; }
+
+# Percentage of RAM in use (same notion as `free`: total - available).
+mem_pct() {
+  awk '/^MemTotal:/{t=$2} /^MemAvailable:/{a=$2} END{printf "%d", (t-a)*100/t}' /proc/meminfo
+}
+
+pick_and_kill() {
+  local menu sel pid name
+  menu=$(ps -eo pid=,%mem=,rss=,comm= --sort=-rss | head -n 5 | awk '{
+      pid=$1; pm=$2; rss=$3; $1=$2=$3=""; sub(/^ +/, "");
+      printf "%-8s %5s%%  %6.2f GiB   %s\n", pid, pm, rss/1048576, $0 }')
+  sel=$(printf '%s\n' "$menu" | rofi -dmenu -i -no-custom -p "Kill" \
+          -mesg "Top 5 processes by memory  (Esc = cancel)") || return 0
+  pid=${sel%% *}
+  [[ $pid =~ ^[0-9]+$ ]] || return 0
+
+  name=$(ps -o comm= -p "$pid") || { notify "ram-watch" "PID $pid is already gone"; return 0; }
+  if ! kill -TERM "$pid" 2>/dev/null; then
+    notify -u critical "ram-watch" "Couldn't kill $name ($pid). Owned by another user?"
+    return 0
+  fi
+  # Give it 3s to exit cleanly, then force it.
+  for _ in {1..6}; do sleep 0.5; kill -0 "$pid" 2>/dev/null || break; done
+  if kill -0 "$pid" 2>/dev/null; then
+    kill -KILL "$pid" 2>/dev/null
+    notify "ram-watch" "Force-killed $name ($pid)"
+  else
+    notify "ram-watch" "Killed $name ($pid)"
+  fi
+}
+
+if [[ $1 == pick ]]; then pick_and_kill; exit; fi
+
+# Only one watcher at a time (i3 restarts etc.).
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/ram-watch.lock"
+flock -n 9 || exit 0
+
+alerted=0
+while :; do
+  pct=$(mem_pct)
+  if (( pct >= THRESHOLD && !alerted )); then
+    alerted=1
+    (
+      exec 9>&-   # don't hold the lock from the click handler
+      action=$(notify -u critical -c ram-alert -r "$NID" \
+                 -A "default,Show top processes" \
+                 "RAM is running out: ${pct}% used" \
+                 "Click to pick a process to kill")
+      [[ $action == default ]] && pick_and_kill
+    ) &
+  elif (( pct < REARM && alerted )); then
+    alerted=0
+    dunstify -C "$NID" 2>/dev/null   # memory recovered, drop the stale alert
+  fi
+  sleep "$INTERVAL"
+done

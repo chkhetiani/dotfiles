@@ -148,16 +148,6 @@ return {
         require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
         vim.api.nvim_create_autocmd("FileType", {
-            pattern = "typescript",
-            callback = function(event)
-                vim.keymap.set('n', '<leader>gi', "<Cmd>TSToolsOrganizeImports<CR>",
-                    { buffer = event.buf, desc = 'LSP: Or[g]anize [I]mports' })
-                vim.keymap.set('n', '<leader>gm', "<Cmd>TSToolsAddMissingImports<CR>",
-                    { buffer = event.buf, desc = 'LSP: Add missin[g] i[m]ports' })
-            end,
-        })
-
-        vim.api.nvim_create_autocmd("FileType", {
             pattern = "go",
             callback = function(_)
                 local bufopts = { noremap = true, silent = true }
@@ -193,5 +183,7 @@ return {
 
         local java = require('irakli.java')
         java.Init();
+        local ts = require('irakli.typescript')
+        ts.Init();
     end,
 }
